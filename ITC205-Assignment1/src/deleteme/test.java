@@ -1,5 +1,5 @@
 package deleteme;
 
 public class test {
-	public boolean test = true;
+	public boolean test = false;
 }
