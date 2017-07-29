@@ -2,113 +2,162 @@ package bcccp.tickets.adhoc;
 
 import java.util.Date;
 
+/**
+ * The Class AdhocTicket.
+ */
 public class AdhocTicket implements IAdhocTicket {
 	
+	/** The Carpark id. */
 	private String carparkId;
+	
+	/** The ticket no. */
 	private int ticketNo;
+	
+	/** The entry date time. */
 	private long entryDateTime;
+	
+	/** The paid date time. */
 	private long paidDateTime;
-	private long exitDateTime;
+	
+	/** The exit date time. */
+	private long exitDateTime = 0l;
+	
+	/** The charge. */
 	private float charge;
+	
+	/** The barcode. */
 	private String barcode;
 
 	
 	
+	/**
+	 * Instantiates a new adhoc ticket.
+	 *
+	 * @param carparkId the carpark id
+	 * @param ticketNo the ticket no
+	 * @param barcode the barcode
+	 */
 	public AdhocTicket(String carparkId, int ticketNo, String barcode) {
-		//TDO Implement constructor
+		this.carparkId = carparkId;
+		this.ticketNo = ticketNo;
+		this.barcode = barcode;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getTicketNo()
+	 */
 	@Override
 	public int getTicketNo() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ticketNo;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getBarcode()
+	 */
 	@Override
 	public String getBarcode() {
-		// TODO Auto-generated method stub
-		return null;
+		return barcode;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getCarparkId()
+	 */
 	@Override
 	public String getCarparkId() {
-		// TODO Auto-generated method stub
-		return null;
+		return carparkId;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#enter(long)
+	 */
 	@Override
 	public void enter(long dateTime) {
-		// TODO Auto-generated method stub
-		
+		entryDateTime = dateTime;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getEntryDateTime()
+	 */
 	@Override
 	public long getEntryDateTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return entryDateTime;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#isCurrent()
+	 */
 	@Override
 	public boolean isCurrent() {
-		// TODO Auto-generated method stub
-		return false;
+		long now = new Date().getTime();
+		return now >= getEntryDateTime() && now < getExitDateTime();
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#pay(long, float)
+	 */
 	@Override
 	public void pay(long dateTime, float charge) {
-		// TODO Auto-generated method stub
-		
+		paidDateTime = dateTime;
+		this.charge -= charge;
 	}
 
-
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getPaidDateTime()
+	 */
 	@Override
 	public long getPaidDateTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return paidDateTime;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#isPaid()
+	 */
 	@Override
 	public boolean isPaid() {
-		// TODO Auto-generated method stub
-		return false;
+		return charge <= 0f;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getCharge()
+	 */
 	@Override
 	public float getCharge() {
-		// TODO Auto-generated method stub
-		return 0;
+		return charge;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#exit(long)
+	 */
 	@Override
 	public void exit(long dateTime) {
-		// TODO Auto-generated method stub
-		
+		exitDateTime = dateTime;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#getExitDateTime()
+	 */
 	@Override
 	public long getExitDateTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return exitDateTime;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see bcccp.tickets.adhoc.IAdhocTicket#hasExited()
+	 */
 	@Override
 	public boolean hasExited() {
-		// TODO Auto-generated method stub
-		return false;
+		return  exitDateTime != 0l;
 	}
-
-	
-	
 }

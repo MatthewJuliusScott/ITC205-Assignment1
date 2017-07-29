@@ -146,12 +146,8 @@ public class Carpark implements ICarpark {
 	@Override
 	public boolean isSeasonTicketValid(String ticketId) {
 		ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
-		Long now = new Date().getTime();
-		if (now >= ticket.getStartValidPeriod() && now < ticket.getEndValidPeriod()) {
-			return true;
-		} else {
-			return false;
-		}
+		long now = new Date().getTime();
+		return now >= ticket.getStartValidPeriod() && now < ticket.getEndValidPeriod();
 	}
 
 	/*
