@@ -10,12 +10,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import bcccp.tickets.adhoc.AdhocTicketDAO;
+import bcccp.tickets.adhoc.AdhocTicketFactory;
 import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
 import bcccp.tickets.season.ISeasonTicketDAO;
 import bcccp.tickets.season.IUsageRecord;
+import bcccp.tickets.season.SeasonTicketDAO;
 import bcccp.tickets.season.UsageRecord;
+import bcccp.tickets.season.UsageRecordFactory;
 
 /**
  * The Class Carpark.
@@ -40,6 +44,30 @@ public class Carpark implements ICarpark {
 	 */
 	private static final float[][]	rates				= new float[][]{
 	        {8.0f, 6.0f}, {4.0f, 3.0f}};
+
+	/**
+	 * The main method. Just for testing logic, to be removed.
+	 *
+	 * @param args
+	 *            the arguments
+	 */
+	public static void main(String[] args) {
+		IAdhocTicketDAO adhocTicketDAO = new AdhocTicketDAO(
+		        new AdhocTicketFactory());
+		ISeasonTicketDAO seasonTicketDAO = new SeasonTicketDAO(
+		        new UsageRecordFactory());
+
+		Carpark carpark = new Carpark("Bathurst Chase", 3, adhocTicketDAO,
+		        seasonTicketDAO, Carpark.TARRIF_SHORT_STAY);
+
+		LocalDateTime threeHrsAgo = LocalDateTime.now().minusHours(3);
+
+		long entryDateTime = threeHrsAgo.atZone(ZoneId.systemDefault())
+		        .toInstant().toEpochMilli();
+
+		float charge = carpark.calculateAddHocTicketCharge(entryDateTime);
+		System.out.println(charge);
+	}
 
 	/** The observers. */
 	private List<ICarparkObserver>	observers;
