@@ -29,10 +29,10 @@ public class Carpark implements ICarpark {
 	public static final int			TARRIF_LONG_STAY	= 1;
 
 	/** The Constant DAY_RATE. */
-	public static final int			DAY_RATE			= 0;
+	private static final int		DAY_RATE			= 0;
 
 	/** The Constant NIGHT_RATE. */
-	public static final int			NIGHT_RATE			= 1;
+	private static final int		NIGHT_RATE			= 1;
 
 	/**
 	 * The rates. dimension 1 is the tarrif stay type, dimension 2 is the time
@@ -67,6 +67,27 @@ public class Carpark implements ICarpark {
 
 	/** The tarrif type. */
 	private int						tarrifType;
+
+	/**
+	 * Instantiates a new carpark.
+	 *
+	 * @param name
+	 *            the name
+	 * @param capacity
+	 *            the capacity
+	 * @param adhocTicketDAO
+	 *            the adhoc ticket DAO
+	 * @param seasonTicketDAO
+	 *            the season ticket DAO
+	 */
+	public Carpark(String name, int capacity, IAdhocTicketDAO adhocTicketDAO,
+	        ISeasonTicketDAO seasonTicketDAO) {
+		this.name = name;
+		this.setCapacity(capacity);
+		this.adhocTicketDAO = adhocTicketDAO;
+		this.seasonTicketDAO = seasonTicketDAO;
+		this.tarrifType = TARRIF_SHORT_STAY;
+	}
 
 	/**
 	 * Instantiates a new carpark.
@@ -116,76 +137,76 @@ public class Carpark implements ICarpark {
 			if (!next.getDayOfWeek().equals(DayOfWeek.SATURDAY)
 			        && !next.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
 
-				// add the time from 1:00:00:00 to 8:59:59:999999999 at the
+				// add the time from 1:00:00:00 to 7:59:59:999999999 at the
 				// NIGHT_RATE
 				// starting no earlier than the entry time
 				start = next.withHour(1).withMinute(0).withSecond(0)
 				        .withNano(0);
 				start = start.compareTo(entryDateTime_) > 0
-				        ? entryDateTime_
-				        : start;
+				        ? start
+				        : entryDateTime_;
 				// finishing no later than the current time
-				end = next.withHour(8).withMinute(59).withSecond(59)
+				end = next.withHour(7).withMinute(59).withSecond(59)
 				        .withNano(999999999);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(next, end);
+				duration = Duration.between(start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
 					charge += hours * rates[tarrifType][NIGHT_RATE];
 				}
 
-				// add the time from 8:00:00:00 to 6:00:00:00 at the DAY_RATE
+				// add the time from 8:00:00:00 to 18:00:00:00 at the DAY_RATE
 				// starting no earlier than the entry time
 				start = next.withHour(8).withMinute(0).withSecond(0)
 				        .withNano(0);
 				start = start.compareTo(entryDateTime_) > 0
-				        ? entryDateTime_
-				        : start;
+				        ? start
+				        : entryDateTime_;
 				// finishing no later than the current time
-				end = next.withHour(6).withMinute(0).withSecond(0).withNano(0);
+				end = next.withHour(18).withMinute(0).withSecond(0).withNano(0);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(next, end);
+				duration = Duration.between(start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
 					charge += hours * rates[tarrifType][DAY_RATE];
 				}
 
-				// add the time from 6:00:00:000000001 to 12:59:59:999999999 at
+				// add the time from 18:00:00:000000001 to 23:59:59:999999999 at
 				// the NIGHT_RATE
 				// starting no earlier than the entry time
-				start = next.withHour(6).withMinute(0).withSecond(0)
+				start = next.withHour(18).withMinute(0).withSecond(0)
 				        .withNano(1);
 				start = start.compareTo(entryDateTime_) > 0
-				        ? entryDateTime_
-				        : start;
+				        ? start
+				        : entryDateTime_;
 				// finishing no later than the current time
-				end = next.withHour(12).withMinute(59).withSecond(59)
+				end = next.withHour(23).withMinute(59).withSecond(59)
 				        .withNano(999999999);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(next, end);
+				duration = Duration.between(start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
 					charge += hours * rates[tarrifType][NIGHT_RATE];
 				}
 			} else { // weekend rules
 
-				// add the time from 1:00:00:00 to 12:59:59:999999999 at the
+				// add the time from 1:00:00:00 to 23:59:59:999999999 at the
 				// NIGHT_RATE
 				// starting no earlier than the entry time
 				start = next.withHour(1).withMinute(0).withSecond(0)
 				        .withNano(0);
-				start = start.compareTo(entryDateTime_) > 0
-				        ? entryDateTime_
-				        : start;
+				start = start.compareTo(entryDateTime_) < 0
+				        ? start
+				        : entryDateTime_;
 				// finishing no later than the current time
-				end = next.withHour(12).withMinute(59).withSecond(59)
+				end = next.withHour(23).withMinute(59).withSecond(59)
 				        .withNano(999999999);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(next, end);
+				duration = Duration.between(start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
 					charge += hours * rates[tarrifType][NIGHT_RATE];
@@ -392,6 +413,12 @@ public class Carpark implements ICarpark {
 		this.numberOfCarsParked = numberOfCarsParked;
 	}
 
+	/**
+	 * Sets the tarrif type.
+	 *
+	 * @param tarrifType
+	 *            the new tarrif type
+	 */
 	public void setTarrifType(int tarrifType) {
 		this.tarrifType = tarrifType;
 	}
