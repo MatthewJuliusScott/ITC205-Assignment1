@@ -118,6 +118,9 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		                && carpark.isSeasonTicketValid(seasonTicketId))) {
 			ui.display("Thank-you. Drive safely.");
 		}
+
+		adhocTicket = null;
+		seasonTicketId = null;
 	}
 
 }

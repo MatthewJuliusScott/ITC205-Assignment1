@@ -1,6 +1,8 @@
 
 package bcccp.carpark.entry;
 
+import java.util.Date;
+
 import bcccp.carpark.Carpark;
 import bcccp.carpark.ICarSensor;
 import bcccp.carpark.ICarSensorResponder;
@@ -43,8 +45,8 @@ public class EntryController
 
 	@Override
 	public void buttonPushed() {
-		IAdhocTicket ticket = carpark.issueAdhocTicket();
-		ui.display(ticket.getBarcode());
+		adhocTicket = carpark.issueAdhocTicket();
+		ui.display(adhocTicket.getBarcode());
 	}
 
 	@Override
@@ -67,8 +69,17 @@ public class EntryController
 
 	@Override
 	public void ticketTaken() {
-		// TODO Auto-generated method stub
+		if (adhocTicket != null) {
+			adhocTicket.enter(new Date().getTime());
+			carpark.recordAdhocTicketEntry();
+			ui.display("Thank-you. Drive safely.");
+		} else if (seasonTicketId != null) {
+			carpark.recordSeasonTicketEntry(seasonTicketId);
+			ui.display("Thank-you. Drive safely.");
+		}
 
+		adhocTicket = null;
+		seasonTicketId = null;
 	}
 
 }
