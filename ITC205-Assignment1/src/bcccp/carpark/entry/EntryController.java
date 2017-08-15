@@ -43,8 +43,8 @@ public class EntryController
 
 	@Override
 	public void buttonPushed() {
-		// TODO Auto-generated method stub
-
+		IAdhocTicket ticket = carpark.issueAdhocTicket();
+		ui.display(ticket.getBarcode());
 	}
 
 	@Override

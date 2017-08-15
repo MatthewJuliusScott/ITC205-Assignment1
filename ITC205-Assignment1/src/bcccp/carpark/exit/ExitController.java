@@ -78,8 +78,10 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	 */
 	@Override
 	public void ticketInserted(String ticketStr) {
+		adhocTicket = carpark.getAdhocTicket(ticketStr);
+
 		// adhoc ticket
-		if (adhocTicket.getBarcode().equals(ticketStr)) {
+		if (adhocTicket != null) {
 			if (adhocTicket.isPaid()) {
 				ui.discardTicket();
 				ui.display("Please take ticket and exit car park.");
@@ -89,13 +91,15 @@ public class ExitController implements ICarSensorResponder, IExitController {
 				// eject ticket
 			}
 
-		} else if (seasonTicketId.equals(ticketStr)) { // season ticket
+		} else if (ticketStr.equals(seasonTicketId)) { // season ticket
 			if (carpark.isSeasonTicketValid(seasonTicketId)) {
 				ui.display("Please take season ticket and exit car park.");
 			} else {
 				ui.display(
 				        "Season ticket is invalid. Please see carpark office.");
 			}
+		} else {
+			ui.display("Invalid ticket. Please see carpark office.");
 		}
 
 	}
@@ -107,7 +111,13 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	 */
 	@Override
 	public void ticketTaken() {
-		ui.display("Thank-you. Drive safely.");
+
+		// if ticket valid
+		if ((adhocTicket != null && adhocTicket.isPaid())
+		        || (seasonTicketId != null
+		                && carpark.isSeasonTicketValid(seasonTicketId))) {
+			ui.display("Thank-you. Drive safely.");
+		}
 	}
 
 }
