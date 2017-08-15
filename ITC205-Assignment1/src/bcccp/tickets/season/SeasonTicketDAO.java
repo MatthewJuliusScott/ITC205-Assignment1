@@ -56,7 +56,6 @@ public class SeasonTicketDAO implements ISeasonTicketDAO {
 
 	@Override
 	public void registerTicket(ISeasonTicket ticket) {
-
 		tickets.put(ticket.getId(), ticket);
 	}
 

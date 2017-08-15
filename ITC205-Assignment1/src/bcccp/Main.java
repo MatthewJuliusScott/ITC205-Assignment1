@@ -2,6 +2,8 @@
 package bcccp;
 
 import java.awt.EventQueue;
+import java.util.Calendar;
+import java.util.Date;
 
 import bcccp.carpark.CarSensor;
 import bcccp.carpark.Carpark;
@@ -50,9 +52,16 @@ public class Main {
 				        0L, 0L);
 				ISeasonTicket t2 = new SeasonTicket("S2222", "Bathurst Chase",
 				        0L, 0L);
+				long now = new Date().getTime();
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 1);
+				long oneYearFromNow = cal.getTimeInMillis();
+				ISeasonTicket t3 = new SeasonTicket("S3333", "Bathurst Chase",
+				        now, oneYearFromNow);
 
 				carpark.registerSeasonTicket(t1);
 				carpark.registerSeasonTicket(t2);
+				carpark.registerSeasonTicket(t3);
 
 				@SuppressWarnings("unused")
 				EntryController entryController = new EntryController(carpark,

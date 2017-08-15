@@ -79,27 +79,24 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	@Override
 	public void ticketInserted(String ticketStr) {
 		adhocTicket = carpark.getAdhocTicket(ticketStr);
+		seasonTicketId = ticketStr;
 
 		// adhoc ticket
 		if (adhocTicket != null) {
 			if (adhocTicket.isPaid()) {
 				ui.discardTicket();
-				ui.display("Please take ticket and exit car park.");
+				ui.display("Please take ticket.");
 			} else {
-				ui.display(
-				        "Please return to a Paystation and pay ticket before leaving.");
+				ui.display("Must pay before exit.");
 				// eject ticket
 			}
 
-		} else if (ticketStr.equals(seasonTicketId)) { // season ticket
-			if (carpark.isSeasonTicketValid(seasonTicketId)) {
-				ui.display("Please take season ticket and exit car park.");
-			} else {
-				ui.display(
-				        "Season ticket is invalid. Please see carpark office.");
-			}
+		} else if (carpark.isSeasonTicketInUse(seasonTicketId)
+		        && carpark.isSeasonTicketValid(seasonTicketId)) { // season
+			// ticket
+			ui.display("Please take ticket.");
 		} else {
-			ui.display("Invalid ticket. Please see carpark office.");
+			ui.display("Invalid ticket.");
 		}
 
 	}
@@ -116,7 +113,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		if ((adhocTicket != null && adhocTicket.isPaid())
 		        || (seasonTicketId != null
 		                && carpark.isSeasonTicketValid(seasonTicketId))) {
-			ui.display("Thank-you. Drive safely.");
+			ui.display("Drive safely.");
 		}
 
 		adhocTicket = null;

@@ -299,7 +299,11 @@ public class Carpark implements ICarpark {
 	@Override
 	public boolean isSeasonTicketInUse(String ticketId) {
 		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
-		return ticket.inUse();
+		if (ticket != null) {
+			return ticket.inUse();
+		} else {
+			return false;
+		}
 	}
 
 	/*
@@ -310,9 +314,13 @@ public class Carpark implements ICarpark {
 	@Override
 	public boolean isSeasonTicketValid(String ticketId) {
 		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
-		final long now = new Date().getTime();
-		return now >= ticket.getStartValidPeriod()
-		        && now < ticket.getEndValidPeriod();
+		if (ticket != null) {
+			final long now = new Date().getTime();
+			return now >= ticket.getStartValidPeriod()
+			        && now < ticket.getEndValidPeriod();
+		} else {
+			return false;
+		}
 	}
 
 	/*

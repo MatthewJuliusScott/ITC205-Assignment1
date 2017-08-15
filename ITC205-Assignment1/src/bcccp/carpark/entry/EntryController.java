@@ -11,28 +11,53 @@ import bcccp.carpark.ICarparkObserver;
 import bcccp.carpark.IGate;
 import bcccp.tickets.adhoc.IAdhocTicket;
 
+/**
+ * The Class EntryController.
+ */
 public class EntryController
         implements
             ICarSensorResponder,
             ICarparkObserver,
             IEntryController {
 
+	/** The entry gate. */
 	private IGate			entryGate;
 
+	/** The outside sensor. */
 	private ICarSensor		outsideSensor;
 
+	/** The inside sensor. */
 	private ICarSensor		insideSensor;
 
+	/** The ui. */
 	private IEntryUI		ui;
 
+	/** The carpark. */
 	private ICarpark		carpark;
 
+	/** The adhoc ticket. */
 	private IAdhocTicket	adhocTicket		= null;
 
+	/** The entry time. */
 	private long			entryTime;
 
+	/** The season ticket id. */
 	private String			seasonTicketId	= null;
 
+	/**
+	 * Instantiates a new entry controller.
+	 *
+	 * @param carpark
+	 *            the carpark
+	 * @param entryGate
+	 *            the entry gate
+	 * @param os
+	 *            the os
+	 * @param is
+	 *            the is
+	 * @param ui
+	 *            the ui
+	 */
 	public EntryController(Carpark carpark, IGate entryGate, ICarSensor os,
 	        ICarSensor is, IEntryUI ui) {
 		this.carpark = carpark;
@@ -43,39 +68,73 @@ public class EntryController
 		ui.registerController(this);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see bcccp.carpark.entry.IEntryController#buttonPushed()
+	 */
 	@Override
 	public void buttonPushed() {
 		adhocTicket = carpark.issueAdhocTicket();
-		ui.display(adhocTicket.getBarcode());
+		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(),
+		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode());
+		ui.display("Please take ticket");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
+	 * boolean)
+	 */
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see bcccp.carpark.ICarparkObserver#notifyCarparkEvent()
+	 */
 	@Override
 	public void notifyCarparkEvent() {
 		// TODO Auto-generated method stub
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * bcccp.carpark.entry.IEntryController#ticketInserted(java.lang.String)
+	 */
 	@Override
 	public void ticketInserted(String barcode) {
-		// TODO Auto-generated method stub
-
+		if (carpark.isSeasonTicketValid(barcode)
+		        && !carpark.isSeasonTicketInUse(barcode)) {
+			seasonTicketId = barcode;
+			ui.display("Ticket Valid.");
+		} else {
+			ui.display("Invalid Ticket.");
+		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see bcccp.carpark.entry.IEntryController#ticketTaken()
+	 */
 	@Override
 	public void ticketTaken() {
 		if (adhocTicket != null) {
 			adhocTicket.enter(new Date().getTime());
 			carpark.recordAdhocTicketEntry();
-			ui.display("Thank-you. Drive safely.");
+			ui.display("Drive safely.");
 		} else if (seasonTicketId != null) {
 			carpark.recordSeasonTicketEntry(seasonTicketId);
-			ui.display("Thank-you. Drive safely.");
+			ui.display("Drive safely.");
 		}
 
 		adhocTicket = null;
