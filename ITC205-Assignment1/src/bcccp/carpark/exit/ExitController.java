@@ -47,6 +47,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		this.insideSensor = is;
 		this.outsideSensor = os;
 		this.ui = ui;
+		this.ui.registerController(this);
 	}
 
 	/*
