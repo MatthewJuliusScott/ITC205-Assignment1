@@ -1,6 +1,8 @@
 
 package bcccp.carpark.exit;
 
+import java.util.Date;
+
 import bcccp.carpark.Carpark;
 import bcccp.carpark.ICarSensor;
 import bcccp.carpark.ICarSensorResponder;
@@ -45,7 +47,9 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		this.carpark = carpark;
 		this.exitGate = exitGate;
 		this.insideSensor = is;
+		this.insideSensor.registerResponder(this);
 		this.outsideSensor = os;
+		this.outsideSensor.registerResponder(this);
 		this.ui = ui;
 		this.ui.registerController(this);
 	}
@@ -62,13 +66,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 			ui.display("Please insert ticket.");
 		} else if (detectorId == outsideSensor.getId() && detected) {
 			exitGate.lower();
-			if (adhocTicket != null) {
-				carpark.recordAdhocTicketExit();
-			} else {
-				carpark.recordSeasonTicketExit(seasonTicketId);
-			}
 		}
-
 	}
 
 	/*
@@ -78,16 +76,17 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	 */
 	@Override
 	public void ticketInserted(String ticketStr) {
+		exitTime = new Date().getTime();
 		adhocTicket = carpark.getAdhocTicket(ticketStr);
 		seasonTicketId = ticketStr;
 
 		// adhoc ticket
 		if (adhocTicket != null) {
 			if (adhocTicket.isPaid()) {
-				ui.discardTicket();
 				ui.display("Please take ticket.");
+				exitGate.raise();
 			} else {
-				ui.display("Must pay before exit.");
+				ui.display("Pay before exiting.");
 				// eject ticket
 			}
 
@@ -95,6 +94,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		        && carpark.isSeasonTicketValid(seasonTicketId)) { // season
 			// ticket
 			ui.display("Please take ticket.");
+			exitGate.raise();
 		} else {
 			ui.display("Invalid ticket.");
 		}
@@ -110,10 +110,14 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	public void ticketTaken() {
 
 		// if ticket valid
-		if ((adhocTicket != null && adhocTicket.isPaid())
-		        || (seasonTicketId != null
-		                && carpark.isSeasonTicketValid(seasonTicketId))) {
-			ui.display("Drive safely.");
+		if (adhocTicket != null && adhocTicket.isPaid()) {
+			adhocTicket.exit(exitTime);
+			carpark.recordAdhocTicketExit();
+			ui.discardTicket();
+		} else if (seasonTicketId != null
+		        && carpark.isSeasonTicketValid(seasonTicketId)) {
+			carpark.recordSeasonTicketExit(seasonTicketId);
+			ui.discardTicket();
 		}
 
 		adhocTicket = null;

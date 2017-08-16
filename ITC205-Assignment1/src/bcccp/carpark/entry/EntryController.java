@@ -63,7 +63,9 @@ public class EntryController
 		this.carpark = carpark;
 		this.entryGate = entryGate;
 		this.outsideSensor = os;
+		this.outsideSensor.registerResponder(this);
 		this.insideSensor = is;
+		this.insideSensor.registerResponder(this);
 		this.ui = ui;
 		ui.registerController(this);
 	}
@@ -89,8 +91,13 @@ public class EntryController
 	 */
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
-		// TODO Auto-generated method stub
-
+		if (detectorId == outsideSensor.getId() && detected) {
+			ui.display("Please press button.");
+		} else if (detectorId == insideSensor.getId() && detected) {
+			entryGate.lower();
+			ui.display("");
+			ui.discardTicket();
+		}
 	}
 
 	/*
@@ -100,8 +107,7 @@ public class EntryController
 	 */
 	@Override
 	public void notifyCarparkEvent() {
-		// TODO Auto-generated method stub
-
+		carpark.notify();
 	}
 
 	/*
@@ -128,13 +134,16 @@ public class EntryController
 	 */
 	@Override
 	public void ticketTaken() {
+		entryTime = new Date().getTime();
 		if (adhocTicket != null) {
 			adhocTicket.enter(new Date().getTime());
+			adhocTicket.enter(entryTime);
 			carpark.recordAdhocTicketEntry();
-			ui.display("Drive safely.");
+			entryGate.raise();
+			ui.display("Enter");
 		} else if (seasonTicketId != null) {
 			carpark.recordSeasonTicketEntry(seasonTicketId);
-			ui.display("Drive safely.");
+			ui.display("Enter");
 		}
 
 		adhocTicket = null;
