@@ -66,6 +66,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 			ui.display("Please insert ticket.");
 		} else if (detectorId == outsideSensor.getId() && detected) {
 			exitGate.lower();
+			ui.display("");
 		}
 	}
 
