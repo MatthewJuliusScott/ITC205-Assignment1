@@ -29,7 +29,14 @@ public class Carpark implements ICarpark {
 	public static final int			TARRIF_LONG_STAY	= 1;
 
 	/** The Constant DAY_RATE. */
-	private static final int		DAY_RATE			= 0;
+	private static final int		DAY_RATE_			= 0;			// TODO
+	                                                                    // Private
+	                                                                    // class
+	                                                                    // variables
+	                                                                    // should
+	                                                                    // have
+	                                                                    // underscore
+	                                                                    // suffix
 
 	/** The Constant NIGHT_RATE. */
 	private static final int		NIGHT_RATE			= 1;
