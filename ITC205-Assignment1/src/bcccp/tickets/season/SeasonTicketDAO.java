@@ -1,66 +1,62 @@
+
 package bcccp.tickets.season;
 
-import bcccp.tickets.season.ISeasonTicket;
-import bcccp.tickets.season.IUsageRecordFactory;
+import java.util.HashMap;
 
 public class SeasonTicketDAO implements ISeasonTicketDAO {
 
-	private IUsageRecordFactory factory;
+	private IUsageRecordFactory				factory;
 
-	
-	
+	// need to keep track of all tickets
+	private HashMap<String, ISeasonTicket>	tickets;
+
 	public SeasonTicketDAO(IUsageRecordFactory factory) {
-		//TOD Implement constructor
+		this.factory = factory;
+		tickets = new HashMap<String, ISeasonTicket>();
 	}
-
-
-
-	@Override
-	public void registerTicket(ISeasonTicket ticket) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 
 	@Override
 	public void deregisterTicket(ISeasonTicket ticket) {
-		// TODO Auto-generated method stub
-		
+
+		tickets.remove(ticket.getId());
 	}
-
-
-
-	@Override
-	public int getNumberOfTickets() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
 
 	@Override
 	public ISeasonTicket findTicketById(String ticketId) {
-		// TODO Auto-generated method stub
-		return null;
+
+		return tickets.get(ticketId);
 	}
 
+	@Override
+	public int getNumberOfTickets() {
 
+		return tickets.size();
+	}
 
 	@Override
 	public void recordTicketEntry(String ticketId) {
-		// TODO Auto-generated method stub
-		
+
+		ISeasonTicket newTicket = tickets.get(ticketId);
+
+		long time = System.currentTimeMillis();
+		IUsageRecord usage = factory.make(ticketId, time);
+
+		newTicket.recordUsage(usage);
 	}
-
-
 
 	@Override
 	public void recordTicketExit(String ticketId) {
-		// TODO Auto-generated method stub
-		
+
+		ISeasonTicket oldTicket = tickets.get(ticketId);
+
+		long time = System.currentTimeMillis();
+		oldTicket.getCurrentUsageRecord().finalise(time);
+
 	}
-	
-	
-	
+
+	@Override
+	public void registerTicket(ISeasonTicket ticket) {
+		tickets.put(ticket.getId(), ticket);
+	}
+
 }
