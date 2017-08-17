@@ -4,8 +4,8 @@ public class UsageRecordFactory implements IUsageRecordFactory {
 
 	@Override
 	public IUsageRecord make(String ticketId, long startDateTime) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new UsageRecord(ticketId, startDateTime); // Is this really a factory ?
 	}
 
 
