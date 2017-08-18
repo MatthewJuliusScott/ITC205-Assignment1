@@ -16,7 +16,7 @@ public class UsageRecord implements IUsageRecord {
 
 
 	@Override
-	public void finalise(long endDateTime) {
+	public void finalise(long endDateTime) { //TODO The terms get/set must be used where an attribute is accessed directly.
 		this.endDateTime = endDateTime;
 		
 	}
