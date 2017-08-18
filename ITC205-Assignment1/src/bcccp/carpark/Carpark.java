@@ -20,23 +20,16 @@ import bcccp.tickets.season.UsageRecord;
 /**
  * The Class Carpark.
  */
-public class Carpark implements ICarpark {
+public class Carpark implements ICarpark { 
 
 	/** The Constant TARRIF_SHORT_STAY. */
-	public static final int			TARRIF_SHORT_STAY	= 0;
+	public static final int			TARRIF_SHORT_STAY	= 0; 
 
 	/** The Constant TARRIF_LONG_STAY. */
 	public static final int			TARRIF_LONG_STAY	= 1;
 
 	/** The Constant DAY_RATE. */
-	private static final int		DAY_RATE_			= 0;			// TODO
-	                                                                    // Private
-	                                                                    // class
-	                                                                    // variables
-	                                                                    // should
-	                                                                    // have
-	                                                                    // underscore
-	                                                                    // suffix
+	private static final int		DAY_RATE_			= 0; // TODO Private class variables should have underscore suffix
 
 	/** The Constant NIGHT_RATE. */
 	private static final int		NIGHT_RATE			= 1;
@@ -76,7 +69,7 @@ public class Carpark implements ICarpark {
 	private boolean					isFull;
 
 	/** The tarrif type. */
-	private int						tarrifType;
+	private int						tarrifType; 
 
 	/**
 	 * Instantiates a new carpark.
@@ -180,8 +173,8 @@ public class Carpark implements ICarpark {
 
 				duration = Duration.between(start, end);
 				hours = duration.toHours();
-				if (hours > 0f) {
-					charge += hours * rates[tarrifType][DAY_RATE];
+				if (hours > 0f) {2
+					charge += hours * rates[tarrifType][DAY_RATE_];
 				}
 
 				// add the time from 18:00:00:000000001 to 23:59:59:999999999 at
