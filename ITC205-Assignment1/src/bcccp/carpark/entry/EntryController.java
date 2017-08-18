@@ -1,5 +1,5 @@
 
-package bcccp.carpark.entry;
+package bcccp.carpark.entry; // TODO The package statement must be the first statement of the file. All files should belong to a specific package.
 
 import java.util.Date;
 
@@ -78,8 +78,8 @@ public class EntryController
 	@Override
 	public void buttonPushed() {
 		adhocTicket = carpark.issueAdhocTicket();
-		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(),
-		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode());
+		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(), 
+		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode()); //TODO The incompleteness of split lines must be made obvious [1].
 		ui.display("Please take ticket");
 	}
 
