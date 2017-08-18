@@ -5,9 +5,7 @@ import java.util.HashMap;
 
 public class SeasonTicketDAO implements ISeasonTicketDAO {
 
-	private IUsageRecordFactory				factory;	// TODO Private class
-	                                                    // variables should have
-	                                                    // underscore suffix.
+	private IUsageRecordFactory				factory; //TODO Private class variables should have underscore suffix.
 
 	// need to keep track of all tickets
 	private HashMap<String, ISeasonTicket>	tickets;
