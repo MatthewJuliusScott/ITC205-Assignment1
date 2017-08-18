@@ -22,7 +22,7 @@ public class EntryController
             IEntryController {
 
 	/** The entry gate. */
-	private IGate			entryGate;
+	private IGate			entryGate; //TODO Variables should be initialized where they are declared and they should be declared in the smallest scope possible.
 
 	/** The outside sensor. */
 	private ICarSensor		outsideSensor;
