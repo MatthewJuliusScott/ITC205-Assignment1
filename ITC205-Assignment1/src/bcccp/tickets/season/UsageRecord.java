@@ -40,7 +40,7 @@ public class UsageRecord implements IUsageRecord {
 
 
 	@Override
-	public String getSeasonTicketId() {
+	public String getSeasonTicketId() { //TODO The name of the object is implicit, and should be avoided in a method name.
 		
 		return ticketId;
 	}
