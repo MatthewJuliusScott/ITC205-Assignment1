@@ -5,10 +5,15 @@ import java.util.HashMap;
 
 public class SeasonTicketDAO implements ISeasonTicketDAO {
 
-	private IUsageRecordFactory				factory; //TODO Private class variables should have underscore suffix.
+	private final IUsageRecordFactory				factory;	// TODO Private
+	                                                            // class
+	                                                            // variables
+	                                                            // should have
+	                                                            // underscore
+	                                                            // suffix.
 
 	// need to keep track of all tickets
-	private HashMap<String, ISeasonTicket>	tickets;
+	private final HashMap<String, ISeasonTicket>	tickets;
 
 	public SeasonTicketDAO(IUsageRecordFactory factory) {
 		this.factory = factory;
@@ -16,7 +21,10 @@ public class SeasonTicketDAO implements ISeasonTicketDAO {
 	}
 
 	@Override
-	public void deregisterTicket(ISeasonTicket ticket) {
+	public void deregisterTicket(ISeasonTicket ticket) { // TODO Generic
+	                                                     // variables should
+	                                                     // have the same name
+	                                                     // as their type.
 
 		tickets.remove(ticket.getId());
 	}
@@ -36,10 +44,10 @@ public class SeasonTicketDAO implements ISeasonTicketDAO {
 	@Override
 	public void recordTicketEntry(String ticketId) {
 
-		ISeasonTicket newTicket = tickets.get(ticketId);
+		final ISeasonTicket newTicket = tickets.get(ticketId);
 
-		long time = System.currentTimeMillis();
-		IUsageRecord usage = factory.make(ticketId, time);
+		final long time = System.currentTimeMillis();
+		final IUsageRecord usage = factory.make(ticketId, time);
 
 		newTicket.recordUsage(usage);
 	}
@@ -47,9 +55,9 @@ public class SeasonTicketDAO implements ISeasonTicketDAO {
 	@Override
 	public void recordTicketExit(String ticketId) {
 
-		ISeasonTicket oldTicket = tickets.get(ticketId);
+		final ISeasonTicket oldTicket = tickets.get(ticketId);
 
-		long time = System.currentTimeMillis();
+		final long time = System.currentTimeMillis();
 		oldTicket.getCurrentUsageRecord().finalise(time);
 
 	}
