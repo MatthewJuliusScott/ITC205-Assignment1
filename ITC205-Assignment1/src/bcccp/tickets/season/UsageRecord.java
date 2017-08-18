@@ -2,7 +2,7 @@ package bcccp.tickets.season;
 
 public class UsageRecord implements IUsageRecord {
 	
-	String ticketId;
+	String ticketId; // TODO Class variables should never be declared public.
 	long startDateTime;
 	long endDateTime;
 	
