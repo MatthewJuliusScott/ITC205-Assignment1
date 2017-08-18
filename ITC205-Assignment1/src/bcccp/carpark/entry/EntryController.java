@@ -135,7 +135,7 @@ public class EntryController
 	 */
 	@Override
 	public void ticketTaken() {
-		entryTime = new Date().getTime();
+		entryTime = new Date().getTime(); //TODO Variables should be kept alive for as short a time as possible.
 		if (adhocTicket != null) {
 			adhocTicket.enter(new Date().getTime());
 			adhocTicket.enter(entryTime);
