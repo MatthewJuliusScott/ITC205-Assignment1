@@ -3,7 +3,7 @@ package bcccp.tickets.season;
 
 import java.util.HashMap;
 
-public class SeasonTicketDAO implements ISeasonTicketDAO {
+public class SeasonTicketDAO implements ISeasonTicketDAO { // TODO Abbreviations in names should be avoided.
 
 	private IUsageRecordFactory				factory; //TODO Private class variables should have underscore suffix.
 
