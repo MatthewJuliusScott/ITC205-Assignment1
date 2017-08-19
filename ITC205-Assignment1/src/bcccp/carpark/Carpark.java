@@ -23,7 +23,7 @@ import bcccp.tickets.season.UsageRecord;
 public class Carpark implements ICarpark { 
 
 	/** The Constant TARRIF_SHORT_STAY. */
-	public static final int			TARRIF_SHORT_STAY	= 0; 
+	public static final int			TARRIF_SHORT_STAY	= 0; //TODO Rule 46 Class Variables should never be declared public. 
 
 	/** The Constant TARRIF_LONG_STAY. */
 	public static final int			TARRIF_LONG_STAY	= 1;
