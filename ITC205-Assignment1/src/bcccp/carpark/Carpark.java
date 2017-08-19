@@ -130,7 +130,7 @@ public class Carpark implements ICarpark {
 		LocalDateTime now = LocalDateTime.now();
 
 		LocalDateTime next = entryDateTime_.minusDays(1);
-		while ((next = next.plusDays(1)).isBefore(now.plusDays(1))) {
+		while ((next = next.plusDays(1)).isBefore(now.plusDays(1))) { 
 
 			Duration duration;
 			float hours;
@@ -138,8 +138,8 @@ public class Carpark implements ICarpark {
 			LocalDateTime end;
 
 			// weekday rules
-			if (!next.getDayOfWeek().equals(DayOfWeek.SATURDAY)
-			        && !next.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+			if (!next.getDayOfWeek().equals(DayOfWeek.SATURDAY)   
+			        && !next.getDayOfWeek().equals(DayOfWeek.SUNDAY)) { //TODO Rule 53 Complex conditionals must be avoided
 
 				// add the time from 1:00:00:00 to 7:59:59:999999999 at the
 				// NIGHT_RATE
@@ -173,7 +173,7 @@ public class Carpark implements ICarpark {
 
 				duration = Duration.between(start, end);
 				hours = duration.toHours();
-				if (hours > 0f) {2
+				if (hours > 0f) {;   
 					charge += hours * rates[tarrifType][DAY_RATE_];
 				}
 
@@ -241,7 +241,7 @@ public class Carpark implements ICarpark {
 	 */
 	@Override
 	public void deregisterSeasonTicket(ISeasonTicket seasonTicket) {
-		seasonTicketDAO.deregisterTicket(seasonTicket);
+		seasonTicketDAO.deregisterTicket(seasonTicket); //TODO Abbreviations and acronmyns should not be uppercase when used as name seasonTicketDao
 	}
 
 	/*
