@@ -16,7 +16,7 @@ public class AdhocTicket implements IAdhocTicket {
 	private enum STATE { ISSUED, CURRENT, PAID, EXITED }
 
 	
-	
+	//TODO Rule 86 Public methods in a public class need javadoc
 	public AdhocTicket(String carparkId, int ticketNo, String barcode) {
 		this.carparkId_ = carparkId;
 		this.ticketNo_ = ticketNo;
