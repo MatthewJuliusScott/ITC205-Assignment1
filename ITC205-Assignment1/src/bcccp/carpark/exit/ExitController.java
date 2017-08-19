@@ -10,7 +10,7 @@ import bcccp.carpark.ICarpark;
 import bcccp.carpark.IGate;
 import bcccp.tickets.adhoc.IAdhocTicket;
 
-public class ExitController implements ICarSensorResponder, IExitController {
+public class ExitController implements ICarSensorResponder, IExitController { //TODO Rule 63 Interface declarations should be on next line
 
 	private IGate			exitGate;
 
@@ -62,7 +62,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	 */
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
-		if (detectorId == insideSensor.getId() && detected) {
+		if (detectorId == insideSensor.getId() && detected) { 
 			ui.display("Please insert ticket."); //TODO First parenthesis in methods can have a space before them (Rule 74).
 		} else if (detectorId == outsideSensor.getId() && detected) {
 			exitGate.lower();
