@@ -18,7 +18,7 @@ public class ExitController implements ICarSensorResponder, IExitController { //
 
 	private ICarSensor		outsideSensor;
 
-	private IExitUI			ui;
+	private IExitUI			ui; 
 
 	private ICarpark		carpark;
 
@@ -55,11 +55,11 @@ public class ExitController implements ICarSensorResponder, IExitController { //
 	} //TODO Methods should be separated by three blank lines. 
 
 	/*
-	 * (non-Javadoc)
+	 * (non-Javadoc) //TODO Rule 83 Use // for non Java Doc comments 
 	 *
 	 * @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
 	 * boolean)
-	 */
+	 */  
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
 		if (detectorId == insideSensor.getId() && detected) { 
