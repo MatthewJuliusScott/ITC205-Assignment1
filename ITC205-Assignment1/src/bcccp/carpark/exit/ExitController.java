@@ -52,7 +52,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 		this.outsideSensor.registerResponder(this);
 		this.ui = ui;
 		this.ui.registerController(this);
-	}
+	} //TODO Methods should be separated by three blank lines. 
 
 	/*
 	 * (non-Javadoc)
@@ -63,7 +63,7 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
 		if (detectorId == insideSensor.getId() && detected) {
-			ui.display("Please insert ticket."); //TODO First parenthesis should have a space before them refer to rule 74.
+			ui.display("Please insert ticket."); //TODO First parenthesis in methods can have a space before them (Rule 74).
 		} else if (detectorId == outsideSensor.getId() && detected) {
 			exitGate.lower();
 			ui.display("");
