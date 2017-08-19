@@ -1,7 +1,8 @@
 
-package bcccp.carpark.entry;
+package bcccp.carpark.entry; // TODO The package statement must be the first statement of the file. All files should belong to a specific package.
 
-import java.util.Date;
+import java.util.Date; //TODO The import statements must follow the package statement. import statements should be sorted with the most fundamental packages first, and grouped with associated packages together and one blank line between groups.
+
 
 import bcccp.carpark.Carpark;
 import bcccp.carpark.ICarSensor;
@@ -21,7 +22,7 @@ public class EntryController
             IEntryController {
 
 	/** The entry gate. */
-	private IGate			entryGate;
+	private IGate			entryGate; //TODO Variables should be initialized where they are declared and they should be declared in the smallest scope possible.
 
 	/** The outside sensor. */
 	private ICarSensor		outsideSensor;
@@ -78,8 +79,8 @@ public class EntryController
 	@Override
 	public void buttonPushed() {
 		adhocTicket = carpark.issueAdhocTicket();
-		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(),
-		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode());
+		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(), 
+		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode()); //TODO The incompleteness of split lines must be made obvious [1].
 		ui.display("Please take ticket");
 	}
 
@@ -134,7 +135,7 @@ public class EntryController
 	 */
 	@Override
 	public void ticketTaken() {
-		entryTime = new Date().getTime();
+		entryTime = new Date().getTime(); //TODO Variables should be kept alive for as short a time as possible.
 		if (adhocTicket != null) {
 			adhocTicket.enter(new Date().getTime());
 			adhocTicket.enter(entryTime);

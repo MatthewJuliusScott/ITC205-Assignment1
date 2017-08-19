@@ -3,9 +3,9 @@ package bcccp.tickets.season;
 
 import java.util.HashMap;
 
-public class SeasonTicketDAO implements ISeasonTicketDAO {
+public class SeasonTicketDAO implements ISeasonTicketDAO { // TODO Abbreviations in names should be avoided.
 
-	private IUsageRecordFactory				factory;
+	private IUsageRecordFactory				factory; //TODO Private class variables should have underscore suffix.
 
 	// need to keep track of all tickets
 	private HashMap<String, ISeasonTicket>	tickets;
@@ -16,7 +16,7 @@ public class SeasonTicketDAO implements ISeasonTicketDAO {
 	}
 
 	@Override
-	public void deregisterTicket(ISeasonTicket ticket) {
+	public void deregisterTicket(ISeasonTicket ticket) { //TODO Generic variables should have the same name as their type.
 
 		tickets.remove(ticket.getId());
 	}
