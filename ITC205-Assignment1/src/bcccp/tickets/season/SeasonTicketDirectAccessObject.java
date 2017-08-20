@@ -3,14 +3,14 @@ package bcccp.tickets.season;
 
 import java.util.HashMap;
 
-public class SeasonTicketDAO implements ISeasonTicketDAO { // TODO Abbreviations in names should be avoided.
+public class SeasonTicketDirectAccessObject implements ISeasonTicketDirectAccessObject { // TODO Abbreviations in names should be avoided.
 
 	private IUsageRecordFactory				factory_; //TODO Private class variables should have underscore suffix.
 
 	// need to keep track of all tickets
 	private HashMap<String, ISeasonTicket>	tickets_;
 
-	public SeasonTicketDAO(IUsageRecordFactory factory) {
+	public SeasonTicketDirectAccessObject(IUsageRecordFactory factory) {
 		this.factory_ = factory;
 		tickets_ = new HashMap<String, ISeasonTicket>();
 	}
