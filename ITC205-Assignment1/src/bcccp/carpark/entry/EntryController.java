@@ -1,7 +1,6 @@
 package bcccp.carpark.entry; 
 
-import java.util.Date; //TODO The import statements must follow the package statement. import statements should be sorted with the most fundamental packages first, and grouped with associated packages together and one blank line between groups.
-
+import java.util.Date; 
 
 import bcccp.carpark.Carpark;
 import bcccp.carpark.ICarSensor;
