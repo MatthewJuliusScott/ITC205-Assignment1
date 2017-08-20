@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class SeasonTicketDirectAccessObject implements ISeasonTicketDirectAccessObject { 
 
-	private IUsageRecordFactory				factory_; //TODO Private class variables should have underscore suffix.
+	private IUsageRecordFactory				factory_; 
 
 	// need to keep track of all tickets
 	private HashMap<String, ISeasonTicket>	tickets_;

@@ -2,22 +2,22 @@ package bcccp.tickets.season;
 
  public class UsageRecord implements IUsageRecord {
 	
-	String ticketId; // TODO Class variables should never be declared public.
-	long startDateTime;
-	long endDateTime;
+	private String ticketId_;
+	private long startDateTime_;
+	private long endDateTime_;
 	
 	
 	
 	public UsageRecord(String ticketId, long startDateTime) {
-		this.ticketId = ticketId;
-		this.startDateTime = startDateTime;
+		this.ticketId_ = ticketId;
+		this.startDateTime_ = startDateTime;
 	}
 
 
 
 	@Override
 	public void finalise(long endDateTime) { //TODO The terms get/set must be used where an attribute is accessed directly.
-		this.endDateTime = endDateTime;
+		this.endDateTime_ = endDateTime;
 		
 	}
 
@@ -26,7 +26,7 @@ package bcccp.tickets.season;
 	@Override
 	public long getStartTime() {
 	
-		return startDateTime;
+		return startDateTime_;
 	}
 
 
@@ -34,7 +34,7 @@ package bcccp.tickets.season;
 	@Override
 	public long getEndTime() {
 
-		return endDateTime;
+		return endDateTime_;
 	}
 
 
@@ -42,7 +42,7 @@ package bcccp.tickets.season;
 	@Override
 	public String getSeasonTicketId() { //TODO The name of the object is implicit, and should be avoided in a method name.
 		
-		return ticketId;
+		return ticketId_;
 	}
 	
 	
