@@ -45,7 +45,7 @@ package bcccp.tickets.season;
 
 
 	@Override
-	public String getSeasonTicketId() { //TODO The name of the object is implicit, and should be avoided in a method name.
+	public String getId() { 
 		
 		return ticketId_;
 	}

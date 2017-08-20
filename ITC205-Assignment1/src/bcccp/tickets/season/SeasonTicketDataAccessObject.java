@@ -11,7 +11,7 @@ public class SeasonTicketDataAccessObject implements ISeasonTicketDataAccessObje
 
 	public SeasonTicketDataAccessObject(IUsageRecordFactory factory) {
 		this.factory_ = factory;
-		tickets_ = new HashMap<String, ISeasonTicket>();
+		this.tickets_ = new HashMap<String, ISeasonTicket>();
 	}
 
 	@Override

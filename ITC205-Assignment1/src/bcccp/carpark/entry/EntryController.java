@@ -78,7 +78,7 @@ public class EntryController
 	public void buttonPushed() {
 		adhocTicket_ = carpark_.issueAdhocTicket();
 		ui_.printTicket(adhocTicket_.getCarparkId(), adhocTicket_.getTicketNo(), 
-						adhocTicket_.getEntryDateTime(), adhocTicket_.getBarcode()); //TODO The incompleteness of split lines must be made obvious [1].
+						adhocTicket_.getEntryDateTime(), adhocTicket_.getBarcode()); 
 		
 		ui_.display("Please take ticket");
 	}
