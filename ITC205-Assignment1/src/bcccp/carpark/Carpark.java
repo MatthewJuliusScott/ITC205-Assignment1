@@ -13,7 +13,7 @@ import java.util.List;
 import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
-import bcccp.tickets.season.ISeasonTicketDAO;
+import bcccp.tickets.season.ISeasonTicketDataAccessObject;
 import bcccp.tickets.season.IUsageRecord;
 import bcccp.tickets.season.UsageRecord;
 
@@ -61,7 +61,7 @@ implements ICarpark {
 	private final IAdhocTicketDAO	adhocTicketDao_;
 
 	/** The season ticket DAO. */
-	private final ISeasonTicketDAO	seasonTicketDao_;
+	private final ISeasonTicketDataAccessObject	seasonTicketDao_;
 
 	/** The name. */
 	private final String			name_;
@@ -85,7 +85,7 @@ implements ICarpark {
 	 *            the season ticket DAO
 	 */
 	public Carpark(String name, int capacity, IAdhocTicketDAO adhocTicketDAO,
-	        ISeasonTicketDAO seasonTicketDAO) {
+	        ISeasonTicketDataAccessObject seasonTicketDAO) {
 		this.name_ = name;
 		this.setCapacity( capacity);
 		this.adhocTicketDao_ = adhocTicketDAO;
@@ -109,7 +109,7 @@ implements ICarpark {
 	 *            the season ticket DAO
 	 */
 	public Carpark(String name, int capacity, IAdhocTicketDAO adhocTicketDAO,
-	        ISeasonTicketDAO seasonTicketDAO, int tarrif) {
+	        ISeasonTicketDataAccessObject seasonTicketDAO, int tarrif) {
 		this.name_ = name;
 		this.setCapacity( capacity);
 		this.adhocTicketDao_ = adhocTicketDAO;

@@ -1,6 +1,6 @@
 package bcccp.tickets.season;
 
-public interface ISeasonTicketDAO {
+public interface ISeasonTicketDataAccessObject {
 	
 	public void registerTicket(ISeasonTicket ticket);
 	public void deregisterTicket(ISeasonTicket ticket);
