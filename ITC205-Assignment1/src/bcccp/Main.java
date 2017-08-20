@@ -18,9 +18,9 @@ import bcccp.tickets.adhoc.AdhocTicketDAO;
 import bcccp.tickets.adhoc.AdhocTicketFactory;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
-import bcccp.tickets.season.ISeasonTicketDirectAccessObject;
+import bcccp.tickets.season.ISeasonTicketDataAccessObject;
 import bcccp.tickets.season.SeasonTicket;
-import bcccp.tickets.season.SeasonTicketDirectAccessObject;
+import bcccp.tickets.season.SeasonTicketDataAccessObject;
 import bcccp.tickets.season.UsageRecordFactory;
 
 public class Main {
@@ -42,7 +42,7 @@ public class Main {
 
 				IAdhocTicketDAO adhocTicketDAO = new AdhocTicketDAO(
 				        new AdhocTicketFactory());
-				ISeasonTicketDirectAccessObject seasonTicketDAO = new SeasonTicketDirectAccessObject(
+				ISeasonTicketDataAccessObject seasonTicketDAO = new SeasonTicketDataAccessObject(
 				        new UsageRecordFactory());
 
 				Carpark carpark = new Carpark("Bathurst Chase", 3,

@@ -2,14 +2,14 @@ package bcccp.tickets.season;
 
 import java.util.HashMap;
 
-public class SeasonTicketDirectAccessObject implements ISeasonTicketDirectAccessObject { 
+public class SeasonTicketDataAccessObject implements ISeasonTicketDataAccessObject { 
 
 	private IUsageRecordFactory				factory_; 
 
 	// need to keep track of all tickets
 	private HashMap<String, ISeasonTicket>	tickets_;
 
-	public SeasonTicketDirectAccessObject(IUsageRecordFactory factory) {
+	public SeasonTicketDataAccessObject(IUsageRecordFactory factory) {
 		this.factory_ = factory;
 		tickets_ = new HashMap<String, ISeasonTicket>();
 	}
