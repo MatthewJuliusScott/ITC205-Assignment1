@@ -15,14 +15,9 @@ package bcccp.tickets.season;
 
 
 
-	@Override
-	public void finalise(long endDateTime) { 
-		this.setEndDateTime(endDateTime);
-	}
 
 
-
-	private void setEndDateTime(long endDateTime) {
+	public void setEndDateTime(long endDateTime) {
 		this.endDateTime_ = endDateTime;
 	}
 

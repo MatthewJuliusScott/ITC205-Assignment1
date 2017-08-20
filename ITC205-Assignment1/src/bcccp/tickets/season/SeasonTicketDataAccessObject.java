@@ -49,7 +49,7 @@ public class SeasonTicketDataAccessObject implements ISeasonTicketDataAccessObje
 		ISeasonTicket oldTicket = tickets_.get(ticketId);
 
 		long time = System.currentTimeMillis();
-		oldTicket.getCurrentUsageRecord().finalise(time);
+		oldTicket.getCurrentUsageRecord().setEndDateTime(time);
 
 	}
 
