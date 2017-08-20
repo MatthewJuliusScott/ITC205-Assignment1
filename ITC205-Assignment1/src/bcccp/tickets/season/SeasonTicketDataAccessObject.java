@@ -15,9 +15,9 @@ public class SeasonTicketDataAccessObject implements ISeasonTicketDataAccessObje
 	}
 
 	@Override
-	public void deregisterTicket(ISeasonTicket ticket) { //TODO Generic variables should have the same name as their type.
+	public void deregisterTicket(ISeasonTicket iSeasonTicket) { 
 
-		tickets_.remove(ticket.getId());
+		tickets_.remove(iSeasonTicket.getId());
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class SeasonTicketDataAccessObject implements ISeasonTicketDataAccessObje
 	}
 
 	@Override
-	public void registerTicket(ISeasonTicket ticket) {
-		tickets_.put(ticket.getId(), ticket);
+	public void registerTicket(ISeasonTicket iSeasonticket) {
+		tickets_.put(iSeasonticket.getId(), iSeasonticket);
 	}
 
 }
