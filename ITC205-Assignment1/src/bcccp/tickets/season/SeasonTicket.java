@@ -36,7 +36,7 @@ public class SeasonTicket implements ISeasonTicket {
 			        "SeasonTicket.endUsage : ticket is not in use");
 		}
 
-		currentUsage.finalise(dateTime);
+		currentUsage.setEndDateTime(dateTime);
 		currentUsage = null;
 
 	}

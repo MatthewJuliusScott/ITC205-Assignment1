@@ -205,7 +205,7 @@ implements ICarpark {
 				// starting no earlier than the entry time
 				start = next.withHour(1).withMinute(0).withSecond(0)
 				        .withNano(0);
-				start = start.compareTo( entryDateTime_) < 0
+				start = start.compareTo( entryDateTime_) > 0
 				        ? start
 				        : entryDateTime_;
 				// finishing no later than the current time
@@ -382,7 +382,7 @@ implements ICarpark {
 		final ISeasonTicket ticket = seasonTicketDao_.findTicketById( ticketId);
 		// record the ticket usage as exited now
 		final IUsageRecord record = ticket.getCurrentUsageRecord();
-		record.finalise(new Date().getTime());
+		record.setEndDateTime(new Date().getTime());
 		ticket.recordUsage(record);
 	}
 
