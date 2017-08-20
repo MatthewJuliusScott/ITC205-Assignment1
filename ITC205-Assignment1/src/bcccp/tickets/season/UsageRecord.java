@@ -16,9 +16,14 @@ package bcccp.tickets.season;
 
 
 	@Override
-	public void finalise(long endDateTime) { //TODO The terms get/set must be used where an attribute is accessed directly.
+	public void finalise(long endDateTime) { 
+		this.setEndDateTime(endDateTime);
+	}
+
+
+
+	private void setEndDateTime(long endDateTime) {
 		this.endDateTime_ = endDateTime;
-		
 	}
 
 
