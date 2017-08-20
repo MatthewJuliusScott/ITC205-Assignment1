@@ -20,56 +20,57 @@ import bcccp.tickets.season.UsageRecord;
 /**
  * The Class Carpark.
  */
-public class Carpark implements ICarpark { 
+public class Carpark
+implements ICarpark { 
 
 	/** The Constant TARRIF_SHORT_STAY. */
-	public static final int			TARRIF_SHORT_STAY	= 0; //TODO Rule 46 Class Variables should never be declared public. 
+	public static final int			TARRIF_SHORT_STAY	= 0;
 
 	/** The Constant TARRIF_LONG_STAY. */
 	public static final int			TARRIF_LONG_STAY	= 1;
 
 	/** The Constant DAY_RATE. */
-	private static final int		DAY_RATE_			= 0; // TODO Private class variables should have underscore suffix
+	private static final int		DAY_RATE_			= 0;
 
 	/** The Constant NIGHT_RATE. */
-	private static final int		NIGHT_RATE			= 1;
+	private static final int		NIGHT_RATE_			= 1;
 
 	/**
 	 * The rates. dimension 1 is the tarrif stay type, dimension 2 is the time
 	 * (day||weekday / night||weekend)
 	 */
-	private static final float[][]	rates				= new float[][]{
+	private static final float[][]	rates_				= new float[][]{
 	        {8.0f, 6.0f}, {4.0f, 3.0f}};
 
 	/** The current carpark id. */
-	private static int				currentCarparkId	= 0;
+	private static int				currentCarparkId_	= 0;
 
 	/** The observers. */
-	private List<ICarparkObserver>	observers;
+	private List<ICarparkObserver>	observers_;
 
 	/** The Carpark id. */
-	private String					carparkId;
+	private String					carparkId_;
 
 	/** The capacity. */
-	private int						capacity;
+	private int						capacity_;
 
 	/** The number of cars parked. */
-	private int						numberOfCarsParked;
+	private int						numberOfCarsParked_;
 
 	/** The adhoc ticket DAO. */
-	private final IAdhocTicketDAO	adhocTicketDAO;
+	private final IAdhocTicketDAO	adhocTicketDao_;
 
 	/** The season ticket DAO. */
-	private final ISeasonTicketDAO	seasonTicketDAO;
+	private final ISeasonTicketDAO	seasonTicketDao_;
 
 	/** The name. */
-	private final String			name;
+	private final String			name_;
 
 	/** The is full. */
-	private boolean					isFull;
+	private boolean					isFull_;
 
 	/** The tarrif type. */
-	private int						tarrifType; 
+	private int						tarrifType_; 
 
 	/**
 	 * Instantiates a new carpark.
@@ -85,14 +86,16 @@ public class Carpark implements ICarpark {
 	 */
 	public Carpark(String name, int capacity, IAdhocTicketDAO adhocTicketDAO,
 	        ISeasonTicketDAO seasonTicketDAO) {
-		this.name = name;
-		this.setCapacity(capacity);
-		this.adhocTicketDAO = adhocTicketDAO;
-		this.seasonTicketDAO = seasonTicketDAO;
-		this.tarrifType = TARRIF_SHORT_STAY;
-		this.carparkId = String.valueOf(currentCarparkId++);
+		this.name_ = name;
+		this.setCapacity( capacity);
+		this.adhocTicketDao_ = adhocTicketDAO;
+		this.seasonTicketDao_ = seasonTicketDAO;
+		this.tarrifType_ = TARRIF_SHORT_STAY;
+		this.carparkId_ = String.valueOf( currentCarparkId_++);
 	}
 
+	
+	
 	/**
 	 * Instantiates a new carpark.
 	 *
@@ -107,25 +110,24 @@ public class Carpark implements ICarpark {
 	 */
 	public Carpark(String name, int capacity, IAdhocTicketDAO adhocTicketDAO,
 	        ISeasonTicketDAO seasonTicketDAO, int tarrif) {
-		this.name = name;
-		this.setCapacity(capacity);
-		this.adhocTicketDAO = adhocTicketDAO;
-		this.seasonTicketDAO = seasonTicketDAO;
-		this.tarrifType = tarrif;
+		this.name_ = name;
+		this.setCapacity( capacity);
+		this.adhocTicketDao_ = adhocTicketDAO;
+		this.seasonTicketDao_ = seasonTicketDAO;
+		this.tarrifType_ = tarrif;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#calculateAddHocTicketCharge(long)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#calculateAddHocTicketCharge(long)
 	@Override
 	public float calculateAddHocTicketCharge(long entryDateTime) {
 
 		float charge = 0.0f;
 
 		LocalDateTime entryDateTime_ = LocalDateTime.ofInstant(
-		        Instant.ofEpochMilli(entryDateTime), ZoneId.systemDefault());
+		        Instant.ofEpochMilli( entryDateTime), ZoneId.systemDefault());
 
 		LocalDateTime now = LocalDateTime.now();
 
@@ -138,15 +140,16 @@ public class Carpark implements ICarpark {
 			LocalDateTime end;
 
 			// weekday rules
-			if (!next.getDayOfWeek().equals(DayOfWeek.SATURDAY)   
-			        && !next.getDayOfWeek().equals(DayOfWeek.SUNDAY)) { //TODO Rule 53 Complex conditionals must be avoided
-
+			boolean isSaturday = next.getDayOfWeek().equals(DayOfWeek.SATURDAY);
+			boolean isSunday = next.getDayOfWeek().equals(DayOfWeek.SUNDAY);
+			boolean isWeekend = isSaturday || isSunday;
+			if (!isWeekend) {
 				// add the time from 1:00:00:00 to 7:59:59:999999999 at the
 				// NIGHT_RATE
 				// starting no earlier than the entry time
 				start = next.withHour(1).withMinute(0).withSecond(0)
 				        .withNano(0);
-				start = start.compareTo(entryDateTime_) > 0
+				start = start.compareTo( entryDateTime_) > 0
 				        ? start
 				        : entryDateTime_;
 				// finishing no later than the current time
@@ -157,24 +160,24 @@ public class Carpark implements ICarpark {
 				duration = Duration.between(start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
-					charge += hours * rates[tarrifType][NIGHT_RATE];
+					charge += hours * rates_[tarrifType_][NIGHT_RATE_];
 				}
 
 				// add the time from 8:00:00:00 to 18:00:00:00 at the DAY_RATE
 				// starting no earlier than the entry time
 				start = next.withHour(8).withMinute(0).withSecond(0)
 				        .withNano(0);
-				start = start.compareTo(entryDateTime_) > 0
+				start = start.compareTo( entryDateTime_) > 0
 				        ? start
 				        : entryDateTime_;
 				// finishing no later than the current time
 				end = next.withHour(18).withMinute(0).withSecond(0).withNano(0);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(start, end);
+				duration = Duration.between( start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {;   
-					charge += hours * rates[tarrifType][DAY_RATE_];
+					charge += hours * rates_[tarrifType_][DAY_RATE_];
 				}
 
 				// add the time from 18:00:00:000000001 to 23:59:59:999999999 at
@@ -182,7 +185,7 @@ public class Carpark implements ICarpark {
 				// starting no earlier than the entry time
 				start = next.withHour(18).withMinute(0).withSecond(0)
 				        .withNano(1);
-				start = start.compareTo(entryDateTime_) > 0
+				start = start.compareTo( entryDateTime_) > 0
 				        ? start
 				        : entryDateTime_;
 				// finishing no later than the current time
@@ -190,10 +193,10 @@ public class Carpark implements ICarpark {
 				        .withNano(999999999);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(start, end);
+				duration = Duration.between( start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
-					charge += hours * rates[tarrifType][NIGHT_RATE];
+					charge += hours * rates_[tarrifType_][NIGHT_RATE_];
 				}
 			} else { // weekend rules
 
@@ -202,7 +205,7 @@ public class Carpark implements ICarpark {
 				// starting no earlier than the entry time
 				start = next.withHour(1).withMinute(0).withSecond(0)
 				        .withNano(0);
-				start = start.compareTo(entryDateTime_) < 0
+				start = start.compareTo( entryDateTime_) < 0
 				        ? start
 				        : entryDateTime_;
 				// finishing no later than the current time
@@ -210,10 +213,10 @@ public class Carpark implements ICarpark {
 				        .withNano(999999999);
 				end = now.compareTo(end) < 0 ? now : end;
 
-				duration = Duration.between(start, end);
+				duration = Duration.between( start, end);
 				hours = duration.toHours();
 				if (hours > 0f) {
-					charge += hours * rates[tarrifType][NIGHT_RATE];
+					charge += hours * rates_[tarrifType_][NIGHT_RATE_];
 				}
 			}
 		}
@@ -221,84 +224,92 @@ public class Carpark implements ICarpark {
 		return charge;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#deregister(bcccp.carpark.ICarparkObserver)
-	 */
+	
+	
+	//(non-Javadoc)
+	// @see bcccp.carpark.ICarpark#deregister(bcccp.carpark.ICarparkObserver)
 	@Override
 	public void deregister(ICarparkObserver observer) {
-		if (observers != null) {
-			observers.remove(observer);
+		if (observers_ != null) {
+			observers_.remove( observer);
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#deregisterSeasonTicket(bcccp.tickets.season.
-	 * ISeasonTicket)
-	 */
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#deregisterSeasonTicket(bcccp.tickets.season.
+	// ISeasonTicket)
 	@Override
 	public void deregisterSeasonTicket(ISeasonTicket seasonTicket) {
-		seasonTicketDAO.deregisterTicket(seasonTicket); //TODO Abbreviations and acronmyns should not be uppercase when used as name seasonTicketDao
+		seasonTicketDao_.deregisterTicket( seasonTicket);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#getAdhocTicket(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#getAdhocTicket(java.lang.String)
 	@Override
 	public IAdhocTicket getAdhocTicket(String barcode) {
-		return adhocTicketDAO.findTicketByBarcode(barcode);
+		return adhocTicketDao_.findTicketByBarcode( barcode);
 	}
 
-	public int getCapacity() {
-		return capacity;
-	}
-
-	/*
-	 * (non-Javadoc)
+	
+	
+	/**
+	 * Gets the capacity.
 	 *
-	 * @see bcccp.carpark.ICarpark#getName()
+	 * @return the capacity
 	 */
+	public int getCapacity() {
+		return capacity_;
+	}
+
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#getName()
 	@Override
 	public String getName() {
-		return name;
+		return name_;
 	}
 
+	
+	
+	/**
+	 * Gets the number of cars parked.
+	 *
+	 * @return the number of cars parked
+	 */
 	public int getNumberOfCarsParked() {
-		return numberOfCarsParked;
+		return numberOfCarsParked_;
 	}
 
+	
+	
 	/**
 	 * Gets the tarrif type.
 	 *
 	 * @return the tarrif type
 	 */
 	public int getTarrifType() {
-		return tarrifType;
+		return tarrifType_;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#isFull()
-	 */
+	
+	
+ 	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#isFull()
 	@Override
 	public boolean isFull() {
-		return isFull;
+		return isFull_;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#isSeasonTicketInUse(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#isSeasonTicketInUse(java.lang.String)
 	@Override
 	public boolean isSeasonTicketInUse(String ticketId) {
-		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		final ISeasonTicket ticket = seasonTicketDao_.findTicketById( ticketId);
 		if (ticket != null) {
 			return ticket.inUse();
 		} else {
@@ -306,14 +317,13 @@ public class Carpark implements ICarpark {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#isSeasonTicketValid(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#isSeasonTicketValid(java.lang.String)
 	@Override
 	public boolean isSeasonTicketValid(String ticketId) {
-		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		final ISeasonTicket ticket = seasonTicketDao_.findTicketById( ticketId);
 		if (ticket != null) {
 			final long now = new Date().getTime();
 			return now >= ticket.getStartValidPeriod()
@@ -323,88 +333,83 @@ public class Carpark implements ICarpark {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#issueAdhocTicket()
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#issueAdhocTicket()
 	@Override
 	public IAdhocTicket issueAdhocTicket() {
-		return adhocTicketDAO.createTicket(carparkId);
+		return adhocTicketDao_.createTicket( carparkId_);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#recordAdhocTicketEntry()
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#recordAdhocTicketEntry()
 	@Override
 	public void recordAdhocTicketEntry() {
 		setNumberOfCarsParked(getNumberOfCarsParked() + 1);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#recordAdhocTicketExit()
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#recordAdhocTicketExit()
 	@Override
 	public void recordAdhocTicketExit() {
 		setNumberOfCarsParked(getNumberOfCarsParked() - 1);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#recordSeasonTicketEntry(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#recordSeasonTicketEntry(java.lang.String)
 	@Override
 	public void recordSeasonTicketEntry(String ticketId) {
-		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		final ISeasonTicket ticket = seasonTicketDao_.findTicketById( ticketId);
 		// record the ticket usage as entering now
 		final IUsageRecord record = new UsageRecord(ticketId,
 		        new Date().getTime());
 		ticket.recordUsage(record);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#recordSeasonTicketExit(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#recordSeasonTicketExit(java.lang.String)
 	@Override
 	public void recordSeasonTicketExit(String ticketId) {
-		final ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		final ISeasonTicket ticket = seasonTicketDao_.findTicketById( ticketId);
 		// record the ticket usage as exited now
 		final IUsageRecord record = ticket.getCurrentUsageRecord();
 		record.finalise(new Date().getTime());
 		ticket.recordUsage(record);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#register(bcccp.carpark.ICarparkObserver)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#register(bcccp.carpark.ICarparkObserver)
 	@Override
 	public void register(ICarparkObserver observer) {
-		if (observers == null) {
-			observers = new ArrayList<ICarparkObserver>();
+		if (observers_ == null) {
+			observers_ = new ArrayList<ICarparkObserver>();
 		}
-		observers.add(observer);
+		observers_.add(observer);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarpark#registerSeasonTicket(bcccp.tickets.season.
-	 * ISeasonTicket)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarpark#registerSeasonTicket(bcccp.tickets.season.
+	// ISeasonTicket)
 	@Override
 	public void registerSeasonTicket(ISeasonTicket seasonTicket) {
-		seasonTicketDAO.registerTicket(seasonTicket);
+		seasonTicketDao_.registerTicket( seasonTicket);
 	}
 
+	
+	
 	/**
 	 * Sets the capacity.
 	 *
@@ -412,9 +417,11 @@ public class Carpark implements ICarpark {
 	 *            the new capacity
 	 */
 	public void setCapacity(int capacity) {
-		this.capacity = capacity;
+		this.capacity_ = capacity;
 	}
 
+	
+	
 	/**
 	 * Sets the number of cars parked.
 	 *
@@ -422,9 +429,11 @@ public class Carpark implements ICarpark {
 	 *            the new number of cars parked
 	 */
 	public void setNumberOfCarsParked(int numberOfCarsParked) {
-		this.numberOfCarsParked = numberOfCarsParked;
+		this.numberOfCarsParked_ = numberOfCarsParked;
 	}
 
+	
+	
 	/**
 	 * Sets the tarrif type.
 	 *
@@ -432,7 +441,9 @@ public class Carpark implements ICarpark {
 	 *            the new tarrif type
 	 */
 	public void setTarrifType(int tarrifType) {
-		this.tarrifType = tarrifType;
+		this.tarrifType_ = tarrifType;
 	}
 
+	
+	
 }

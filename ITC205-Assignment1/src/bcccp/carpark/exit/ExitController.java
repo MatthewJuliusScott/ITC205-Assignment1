@@ -10,29 +10,32 @@ import bcccp.carpark.ICarpark;
 import bcccp.carpark.IGate;
 import bcccp.tickets.adhoc.IAdhocTicket;
 
-<<<<<<< HEAD
-public class ExitController implements ICarSensorResponder, IExitController { //TODO Rule 63 Interface declarations should be on next line
-=======
-public class ExitController implements ICarSensorResponder, IExitController {
->>>>>>> branch 'master' of https://github.com/MatthewJuliusScott/ITC205-Team-Repository.git
+public class ExitController
+implements ICarSensorResponder, IExitController {
 
-	private IGate			exitGate;
-<<<<<<< HEAD
-=======
+	/** The exit gate. */
+	private IGate			exitGate_;
+	
+	/** The inside sensor. */
+	private ICarSensor		insideSensor_;
 
-	private ICarSensor		insideSensor;
+	/** The outside sensor. */
+	private ICarSensor		outsideSensor_;
 
-	private ICarSensor		outsideSensor;
+	/** The user interface. */
+	private IExitUI			ui_; 
 
-	private IExitUI			ui;
+	/** The carpark. */
+	private ICarpark		carpark_;
 
-	private ICarpark		carpark;
+	/** The adhoc ticket. */
+	private IAdhocTicket	adhocTicket_		= null;
 
-	private IAdhocTicket	adhocTicket		= null;
+	/** The exit time. */
+	private long			exitTime_;
 
-	private long			exitTime;
-
-	private String			seasonTicketId	= null;
+	/** The season ticket id. */
+	private String			seasonTicketId_	= null;
 
 	/**
 	 * Instantiates a new exit controller.
@@ -50,140 +53,84 @@ public class ExitController implements ICarSensorResponder, IExitController {
 	 */
 	public ExitController(Carpark carpark, IGate exitGate, ICarSensor is,
 	        ICarSensor os, IExitUI ui) {
-		this.carpark = carpark;
-		this.exitGate = exitGate;
-		this.insideSensor = is;
-		this.insideSensor.registerResponder(this);
-		this.outsideSensor = os;
-		this.outsideSensor.registerResponder(this);
-		this.ui = ui;
-		this.ui.registerController(this);
+		this.carpark_ = carpark;
+		this.exitGate_ = exitGate;
+		this.insideSensor_ = is;
+		this.insideSensor_.registerResponder(this);
+		this.outsideSensor_ = os;
+		this.outsideSensor_.registerResponder(this);
+		this.ui_ = ui;
+		this.ui_.registerController(this);
 	}
->>>>>>> branch 'master' of https://github.com/MatthewJuliusScott/ITC205-Team-Repository.git
 
-<<<<<<< HEAD
-	private ICarSensor		insideSensor;
-
-	private ICarSensor		outsideSensor;
-
-	private IExitUI			ui; 
-
-	private ICarpark		carpark;
-
-	private IAdhocTicket	adhocTicket		= null;
-
-	private long			exitTime;
-
-	private String			seasonTicketId	= null;
-
-	/**
-	 * Instantiates a new exit controller.
-	 *
-	 * @param carpark
-	 *            the carpark
-	 * @param exitGate
-	 *            the exit gate
-	 * @param is
-	 *            the inside sensor
-	 * @param os
-	 *            the outside sensor
-	 * @param ui
-	 *            the user interface
-	 */
-	public ExitController(Carpark carpark, IGate exitGate, ICarSensor is,
-	        ICarSensor os, IExitUI ui) {
-		this.carpark = carpark;
-		this.exitGate = exitGate;
-		this.insideSensor = is;
-		this.insideSensor.registerResponder(this);
-		this.outsideSensor = os;
-		this.outsideSensor.registerResponder(this);
-		this.ui = ui;
-		this.ui.registerController(this);
-	} //TODO Methods should be separated by three blank lines. 
-
-	/*
-	 * (non-Javadoc) //TODO Rule 83 Use // for non Java Doc comments 
-	 *
-	 * @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
-	 * boolean)
-	 */  
-=======
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
-	 * boolean)
-	 */
->>>>>>> branch 'master' of https://github.com/MatthewJuliusScott/ITC205-Team-Repository.git
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
+	// boolean)
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
-<<<<<<< HEAD
-		if (detectorId == insideSensor.getId() && detected) { 
-			ui.display("Please insert ticket."); //TODO First parenthesis in methods can have a space before them (Rule 74).
-=======
-		if (detectorId == insideSensor.getId() && detected) {
-			ui.display("Please insert ticket.");
->>>>>>> branch 'master' of https://github.com/MatthewJuliusScott/ITC205-Team-Repository.git
-		} else if (detectorId == outsideSensor.getId() && detected) {
-			exitGate.lower();
-			ui.display("");
+		if (detectorId == insideSensor_.getId() && detected) { 
+			ui_.display("Please insert ticket.");
+		} else if (detectorId == outsideSensor_.getId() && detected) {
+			exitGate_.lower();
+			ui_.display("");
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.exit.IExitController#ticketInserted(java.lang.String)
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.exit.IExitController#ticketInserted(java.lang.String)
 	@Override
 	public void ticketInserted(String ticketStr) {
-		exitTime = new Date().getTime();
-		adhocTicket = carpark.getAdhocTicket(ticketStr);
-		seasonTicketId = ticketStr;
+		exitTime_ = new Date().getTime();
+		adhocTicket_ = carpark_.getAdhocTicket( ticketStr);
+		seasonTicketId_ = ticketStr;
 
 		// adhoc ticket
-		if (adhocTicket != null) {
-			if (adhocTicket.isPaid()) {
-				ui.display("Please take ticket.");
-				exitGate.raise();
+		if (adhocTicket_ != null) {
+			if (adhocTicket_.isPaid()) {
+				ui_.display("Please take ticket.");
+				exitGate_.raise();
 			} else {
-				ui.display("Pay before exiting.");
+				ui_.display("Pay before exiting.");
 				// eject ticket
 			}
 
-		} else if (carpark.isSeasonTicketInUse(seasonTicketId)
-		        && carpark.isSeasonTicketValid(seasonTicketId)) { // season
+		} else if (carpark_.isSeasonTicketInUse( seasonTicketId_)
+		        && carpark_.isSeasonTicketValid( seasonTicketId_)) { // season
 			// ticket
-			ui.display("Please take ticket.");
-			exitGate.raise();
+			ui_.display("Please take ticket.");
+			exitGate_.raise();
 		} else {
-			ui.display("Invalid ticket.");
+			ui_.display("Invalid ticket.");
 		}
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.exit.IExitController#ticketTaken()
-	 */
+	
+	
+	// (non-Javadoc)
+	// @see bcccp.carpark.exit.IExitController#ticketTaken()
 	@Override
 	public void ticketTaken() {
 
 		// if ticket valid
-		if (adhocTicket != null && adhocTicket.isPaid()) {
-			adhocTicket.exit(exitTime);
-			carpark.recordAdhocTicketExit();
-			ui.discardTicket();
-		} else if (seasonTicketId != null
-		        && carpark.isSeasonTicketValid(seasonTicketId)) {
-			carpark.recordSeasonTicketExit(seasonTicketId);
-			ui.discardTicket();
+		if (adhocTicket_ != null && adhocTicket_.isPaid()) {
+			adhocTicket_.exit( exitTime_);
+			carpark_.recordAdhocTicketExit();
+			ui_.discardTicket();
+		} else if (seasonTicketId_ != null
+		        && carpark_.isSeasonTicketValid( seasonTicketId_)) {
+			carpark_.recordSeasonTicketExit( seasonTicketId_);
+			ui_.discardTicket();
 		}
 
-		adhocTicket = null;
-		seasonTicketId = null;
+		adhocTicket_ = null;
+		seasonTicketId_ = null;
 	}
 
+	
+	
 }
