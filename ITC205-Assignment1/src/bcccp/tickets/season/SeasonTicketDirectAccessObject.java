@@ -1,9 +1,8 @@
-
 package bcccp.tickets.season;
 
 import java.util.HashMap;
 
-public class SeasonTicketDirectAccessObject implements ISeasonTicketDirectAccessObject { // TODO Abbreviations in names should be avoided.
+public class SeasonTicketDirectAccessObject implements ISeasonTicketDirectAccessObject { 
 
 	private IUsageRecordFactory				factory_; //TODO Private class variables should have underscore suffix.
 

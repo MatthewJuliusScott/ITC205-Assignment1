@@ -1,5 +1,4 @@
-
-package bcccp.carpark.entry; // TODO The package statement must be the first statement of the file. All files should belong to a specific package.
+package bcccp.carpark.entry; 
 
 import java.util.Date; //TODO The import statements must follow the package statement. import statements should be sorted with the most fundamental packages first, and grouped with associated packages together and one blank line between groups.
 
