@@ -22,25 +22,25 @@ public class EntryController
             IEntryController {
 
 	/** The entry gate. */
-	private IGate			entryGate_; //TODO Variables should be initialized where they are declared and they should be declared in the smallest scope possible.
+	private IGate			entryGate_ = null; 
 
 	/** The outside sensor. */
-	private ICarSensor		outsideSensor_;
+	private ICarSensor		outsideSensor_ = null;
 
 	/** The inside sensor. */
-	private ICarSensor		insideSensor_;
+	private ICarSensor		insideSensor_ = null;
 
 	/** The ui. */
-	private IEntryUI		ui_;
+	private IEntryUI		ui_ = null;
 
 	/** The carpark. */
-	private ICarpark		carpark_;
+	private ICarpark		carpark_ = null;
 
 	/** The adhoc ticket. */
-	private IAdhocTicket	adhocTicket_		= null;
+	private IAdhocTicket	adhocTicket_ = null;
 
 	/** The entry time. */
-	private long			entryTime_;
+	private long			entryTime_ = 0l;
 
 	/** The season ticket id. */
 	private String			seasonTicketId_	= null;
@@ -135,9 +135,9 @@ public class EntryController
 	 */
 	@Override
 	public void ticketTaken() {
-		entryTime_ = new Date().getTime(); //TODO Variables should be kept alive for as short a time as possible.
 		if (adhocTicket_ != null) {
 			adhocTicket_.enter(new Date().getTime());
+			entryTime_ = new Date().getTime(); 
 			adhocTicket_.enter(entryTime_);
 			carpark_.recordAdhocTicketEntry();
 			entryGate_.raise();
