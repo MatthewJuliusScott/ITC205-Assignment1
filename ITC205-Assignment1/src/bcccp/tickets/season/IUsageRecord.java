@@ -2,9 +2,9 @@ package bcccp.tickets.season;
 
 public interface IUsageRecord {
 	
-	public void setEndDateTime(long endDateTime);
+	public void finalise(long endDateTime);
 	public long getStartTime();
 	public long getEndTime();
-	public String getId();
+	public String getSeasonTicketId();
 
 }
