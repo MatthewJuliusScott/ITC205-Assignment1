@@ -124,10 +124,8 @@ public class ExitController
 		}
 		
 	}
-
 	
-	
-	void setState(STATE newState) {
+	private void setState(STATE newState) {
 		switch (newState) {
 		
 		case BLOCKED: 
@@ -307,17 +305,13 @@ public class ExitController
 	STATE getState() {
 		return state;
 	}
-
-
-	/**
-	 * Package level method for testing. Sets the adhoc ticket.
-	 *
-	 * @param adhocTicket the new adhoc ticket
-	 */
-	void setAdhocTicket(IAdhocTicket adhocTicket) {
-		this.adhocTicket = adhocTicket;
-	}
-
 	
-
+	/**
+	 * Package method for testing purposes only. Gets the previous state.
+	 *
+	 * @return the prevState
+	 */
+	STATE getPrevState() {
+		return prevState;
+	}
 }
