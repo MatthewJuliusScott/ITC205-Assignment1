@@ -4,35 +4,22 @@
 
 package bcccp.carpark;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.*;
 
-import bcccp.carpark.Carpark;
-import bcccp.carpark.ICarSensor;
-import bcccp.carpark.IGate;
-import bcccp.carpark.exit.ExitController;
-import bcccp.tickets.adhoc.AdhocTicket;
-import bcccp.tickets.adhoc.AdhocTicketDAO;
 import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
 import bcccp.tickets.season.ISeasonTicketDAO;
-import bcccp.tickets.season.SeasonTicketDAO;
 
 /**
  * @author Matthew
