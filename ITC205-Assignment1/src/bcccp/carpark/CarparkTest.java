@@ -4,18 +4,35 @@
 
 package bcccp.carpark;
 
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
 
+import bcccp.carpark.Carpark;
+import bcccp.carpark.ICarSensor;
+import bcccp.carpark.IGate;
+import bcccp.carpark.exit.ExitController;
+import bcccp.tickets.adhoc.AdhocTicket;
+import bcccp.tickets.adhoc.AdhocTicketDAO;
+import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
+import bcccp.tickets.season.ISeasonTicket;
 import bcccp.tickets.season.ISeasonTicketDAO;
+import bcccp.tickets.season.SeasonTicketDAO;
 
 /**
  * @author Matthew
@@ -24,164 +41,60 @@ import bcccp.tickets.season.ISeasonTicketDAO;
 @RunWith(MockitoJUnitRunner.class)
 public class CarparkTest {
 
+	private int					capacity	= 1;
+
+	private String				name		= "Test Carpark";
+
 	@Mock
 	private IAdhocTicketDAO		adhocTicketDAO;
 
 	@Mock
-	private int					capacity;
-
-	@Mock
-	private String				name;
-
-	@Mock
 	private ISeasonTicketDAO	seasonTicketDAO;
 
-	@InjectMocks
-	private Carpark				carpark;
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+	Carpark						carpark;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		carpark = new Carpark(name, capacity, adhocTicketDAO, seasonTicketDAO);
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#Carpark(java.lang.String, int, bcccp.tickets.adhoc.IAdhocTicketDAO, bcccp.tickets.season.ISeasonTicketDAO)}.
+	 * Test method for
+	 * {@link bcccp.carpark.Carpark#Carpark(java.lang.String, int, bcccp.tickets.adhoc.IAdhocTicketDAO, bcccp.tickets.season.ISeasonTicketDAO)}.
 	 */
 	@Test
 	public final void testCarpark() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		carpark = new Carpark(name, capacity, adhocTicketDAO, seasonTicketDAO);
+		Assert.assertNotNull(carpark);
 	}
 
 	/**
-	 * Test method for {@link bcccp.carpark.Carpark#register(bcccp.carpark.ICarparkObserver)}.
-	 */
-	@Test
-	public final void testRegister() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#deregister(bcccp.carpark.ICarparkObserver)}.
-	 */
-	@Test
-	public final void testDeregister() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#getName()}.
-	 */
-	@Test
-	public final void testGetName() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#isFull()}.
-	 */
-	@Test
-	public final void testIsFull() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#issueAdhocTicket()}.
-	 */
-	@Test
-	public final void testIssueAdhocTicket() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#getAdhocTicket(java.lang.String)}.
+	 * Test method for
+	 * {@link bcccp.carpark.Carpark#getAdhocTicket(java.lang.String)}.
 	 */
 	@Test
 	public final void testGetAdhocTicket() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		IAdhocTicket expected = org.mockito.Mockito.mock(IAdhocTicket.class);
+		when(adhocTicketDAO.findTicketByBarcode("BARCODE"))
+		        .thenReturn(expected);
+		IAdhocTicket actual = carpark.getAdhocTicket("BARCODE");
+		Assert.assertEquals(expected, actual);
 	}
 
 	/**
-	 * Test method for {@link bcccp.carpark.Carpark#calculateAddHocTicketCharge(long)}.
-	 */
-	@Test
-	public final void testCalculateAddHocTicketCharge() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#isSeasonTicketValid(java.lang.String)}.
+	 * Test method for
+	 * {@link bcccp.carpark.Carpark#isSeasonTicketValid(java.lang.String)}.
 	 */
 	@Test
 	public final void testIsSeasonTicketValid() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#registerSeasonTicket(bcccp.tickets.season.ISeasonTicket)}.
-	 */
-	@Test
-	public final void testRegisterSeasonTicket() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#deregisterSeasonTicket(bcccp.tickets.season.ISeasonTicket)}.
-	 */
-	@Test
-	public final void testDeregisterSeasonTicket() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#recordSeasonTicketEntry(java.lang.String)}.
-	 */
-	@Test
-	public final void testRecordSeasonTicketEntry() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link bcccp.carpark.Carpark#recordAdhocTicketEntry()}.
-	 */
-	@Test
-	public final void testRecordAdhocTicketEntry() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
+		when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
+		boolean isValid = carpark.isSeasonTicketValid("BARCODE");
+		Assert.assertTrue(isValid);
 	}
 
 	/**
@@ -189,116 +102,43 @@ public class CarparkTest {
 	 */
 	@Test
 	public final void testRecordAdhocTicketExit() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		Integer before = carpark.getNParked();
+		carpark.recordAdhocTicketExit();
+		Integer after = carpark.getNParked();
+		Assert.assertTrue(after.equals(before - 1));
 	}
 
 	/**
-	 * Test method for {@link bcccp.carpark.Carpark#recordSeasonTicketExit(java.lang.String)}.
+	 * Test method for
+	 * {@link bcccp.carpark.Carpark#recordSeasonTicketExit(java.lang.String)}.
 	 */
 	@Test
 	public final void testRecordSeasonTicketExit() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		try {
+			ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
+			when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
+			doNothing().when(seasonTicketDAO).recordTicketExit("BARCODE");
+			carpark.recordSeasonTicketExit("BARCODE");
+		} catch (Exception e) {
+			fail();
+		}
 	}
 
 	/**
-	 * Test method for {@link bcccp.carpark.Carpark#isSeasonTicketInUse(java.lang.String)}.
+	 * Test method for
+	 * {@link bcccp.carpark.Carpark#isSeasonTicketInUse(java.lang.String)}.
 	 */
 	@Test
 	public final void testIsSeasonTicketInUse() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		try {
+			ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
+			when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
+			when(ticket.inUse()).thenReturn(true);
+			boolean expected = true;
+			boolean actual = carpark.isSeasonTicketInUse("BARCODE");
+			Assert.assertEquals(expected, actual);
+		} catch (Exception e) {
+			fail();
+		}
 	}
-
-	/**
-	 * Test method for {@link java.lang.Object#Object()}.
-	 */
-	@Test
-	public final void testObject() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#getClass()}.
-	 */
-	@Test
-	public final void testGetClass() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#equals(java.lang.Object)}.
-	 */
-	@Test
-	public final void testEquals() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#clone()}.
-	 */
-	@Test
-	public final void testClone() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#toString()}.
-	 */
-	@Test
-	public final void testToString() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#notify()}.
-	 */
-	@Test
-	public final void testNotify() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#notifyAll()}.
-	 */
-	@Test
-	public final void testNotifyAll() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#wait(long)}.
-	 */
-	@Test
-	public final void testWait() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#finalize()}.
-	 */
-	@Test
-	public final void testFinalize() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
 }
