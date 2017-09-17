@@ -4,23 +4,18 @@
 
 package bcccp.tickets.adhoc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
-import org.junit.AfterClass;
+import java.util.List;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import bcccp.carpark.Carpark;
-import bcccp.carpark.ICarSensor;
-import bcccp.carpark.IGate;
-import bcccp.tickets.adhoc.AdhocTicket;
 
 /**
  * @author Matthew
@@ -36,49 +31,24 @@ public class AdhocTicketDAOTest {
 	private AdhocTicketDAO		adhocTicketDAO;
 
 	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	/**
 	 * Test method for {@link bcccp.tickets.adhoc.AdhocTicketDAO#AdhocTicketDAO(bcccp.tickets.adhoc.IAdhocTicketFactory)}.
 	 */
 	@Test
 	public final void testAdhocTicketDAO() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		adhocTicketDAO = new AdhocTicketDAO(adhocTicketFactory);
+		Assert.assertNotNull(adhocTicketDAO);
 	}
-
+	
 	/**
 	 * Test method for {@link bcccp.tickets.adhoc.AdhocTicketDAO#createTicket(java.lang.String)}.
 	 */
 	@Test
 	public final void testCreateTicket() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		IAdhocTicket expected = org.mockito.Mockito.mock(IAdhocTicket.class);
+		when(adhocTicketFactory.make(any(String.class), anyInt()))
+        .thenReturn(expected);
+		IAdhocTicket actual = adhocTicketDAO.createTicket("carparkId");
+		Assert.assertEquals(expected, actual);	
 	}
 
 	/**
@@ -86,107 +56,24 @@ public class AdhocTicketDAOTest {
 	 */
 	@Test
 	public final void testFindTicketByBarcode() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		IAdhocTicket ticketMock = org.mockito.Mockito.mock(IAdhocTicket.class);
+		when(adhocTicketFactory.make(any(String.class), anyInt()))
+        .thenReturn(ticketMock);
+		IAdhocTicket ticket = adhocTicketDAO.createTicket("carparkId");
+		IAdhocTicket findTicket = adhocTicketDAO.findTicketByBarcode(ticket.getBarcode());
+		Assert.assertEquals(ticket.getBarcode(), findTicket.getBarcode());	
 	}
-
+	
 	/**
 	 * Test method for {@link bcccp.tickets.adhoc.AdhocTicketDAO#getCurrentTickets()}.
 	 */
 	@Test
 	public final void testGetCurrentTickets() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		IAdhocTicket ticketMock = org.mockito.Mockito.mock(IAdhocTicket.class);
+		when(adhocTicketFactory.make(any(String.class), anyInt()))
+        .thenReturn(ticketMock);
+		IAdhocTicket ticket = adhocTicketDAO.createTicket("carparkId");
+		List<IAdhocTicket> currentTickets = adhocTicketDAO.getCurrentTickets();
+		Assert.assertTrue(currentTickets.contains(ticket));
 	}
-
-	/**
-	 * Test method for {@link java.lang.Object#Object()}.
-	 */
-	@Test
-	public final void testObject() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#getClass()}.
-	 */
-	@Test
-	public final void testGetClass() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#equals(java.lang.Object)}.
-	 */
-	@Test
-	public final void testEquals() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#clone()}.
-	 */
-	@Test
-	public final void testClone() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#toString()}.
-	 */
-	@Test
-	public final void testToString() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#notify()}.
-	 */
-	@Test
-	public final void testNotify() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#notifyAll()}.
-	 */
-	@Test
-	public final void testNotifyAll() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#wait(long)}.
-	 */
-	@Test
-	public final void testWait() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link java.lang.Object#finalize()}.
-	 */
-	@Test
-	public final void testFinalize() throws Exception {
-		// TODO
-		throw new RuntimeException("not yet implemented");
-	}
-
 }
