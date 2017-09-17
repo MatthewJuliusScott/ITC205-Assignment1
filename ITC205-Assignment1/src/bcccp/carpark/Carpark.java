@@ -167,6 +167,15 @@ public class Carpark implements ICarpark {
 		
 		return ticket.inUse();
 	}
+	
+	/**
+	 * Package method for testing purposes only. Gets the number of cars parked in Carpark.
+	 *
+	 * @return the prevState
+	 */
+	int getNParked() {
+		return nParked;
+	}
 
 
 

@@ -11,7 +11,7 @@ public class ExitController
 		implements ICarSensorResponder,
 		           IExitController {
 	
-	private enum STATE { IDLE, WAITING, PROCESSED, REJECTED, TAKEN, EXITING, EXITED, BLOCKED } 
+	enum STATE { IDLE, WAITING, PROCESSED, REJECTED, TAKEN, EXITING, EXITED, BLOCKED } 
 	
 	private STATE state;
 	private STATE prevState;
@@ -124,8 +124,6 @@ public class ExitController
 		}
 		
 	}
-
-	
 	
 	private void setState(STATE newState) {
 		switch (newState) {
@@ -240,7 +238,7 @@ public class ExitController
 
 	
 	
-	private boolean isAdhocTicket(String barcode) {
+	boolean isAdhocTicket(String barcode) {
 		return barcode.substring(0,1).equals("A");
 	}
 	
@@ -297,10 +295,23 @@ public class ExitController
 		}
 		
 	}
-
-
-
-
 	
-
+	
+	/**
+	 * Package method for testing purposes only. Gets the state.
+	 *
+	 * @return the state
+	 */
+	STATE getState() {
+		return state;
+	}
+	
+	/**
+	 * Package method for testing purposes only. Gets the previous state.
+	 *
+	 * @return the prevState
+	 */
+	STATE getPrevState() {
+		return prevState;
+	}
 }
