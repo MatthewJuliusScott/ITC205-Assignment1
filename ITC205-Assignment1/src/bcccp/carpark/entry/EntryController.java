@@ -1,7 +1,4 @@
-
 package bcccp.carpark.entry;
-
-import java.util.Date;
 
 import bcccp.carpark.Carpark;
 import bcccp.carpark.ICarSensor;
@@ -11,143 +8,294 @@ import bcccp.carpark.ICarparkObserver;
 import bcccp.carpark.IGate;
 import bcccp.tickets.adhoc.IAdhocTicket;
 
-/**
- * The Class EntryController.
- */
-public class EntryController
-        implements
-            ICarSensorResponder,
-            ICarparkObserver,
-            IEntryController {
+public class EntryController implements ICarSensorResponder, ICarparkObserver, IEntryController {
 
-	/** The entry gate. */
-	private IGate			entryGate;
-
-	/** The outside sensor. */
-	private ICarSensor		outsideSensor;
-
-	/** The inside sensor. */
-	private ICarSensor		insideSensor;
-
-	/** The ui. */
-	private IEntryUI		ui;
-
-	/** The carpark. */
-	private ICarpark		carpark;
-
-	/** The adhoc ticket. */
-	private IAdhocTicket	adhocTicket		= null;
-
-	/** The entry time. */
-	private long			entryTime;
-
-	/** The season ticket id. */
-	private String			seasonTicketId	= null;
-
-	/**
-	 * Instantiates a new entry controller.
-	 *
-	 * @param carpark
-	 *            the carpark
-	 * @param entryGate
-	 *            the entry gate
-	 * @param os
-	 *            the os
-	 * @param is
-	 *            the is
-	 * @param ui
-	 *            the ui
-	 */
-	public EntryController(Carpark carpark, IGate entryGate, ICarSensor os,
-	        ICarSensor is, IEntryUI ui) {
-		this.carpark = carpark;
-		this.entryGate = entryGate;
-		this.outsideSensor = os;
-		this.outsideSensor.registerResponder(this);
-		this.insideSensor = is;
-		this.insideSensor.registerResponder(this);
-		this.ui = ui;
-		ui.registerController(this);
+	public enum STATE {
+		IDLE, WAITING, FULL, VALIDATED, ISSUED, TAKEN, ENTERING, ENTERED, BLOCKED
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.entry.IEntryController#buttonPushed()
-	 */
+	private STATE state_;
+	private STATE prevState_;
+	private String message;
+
+	private IGate entryGate_;
+	private ICarSensor outsideEntrySensor_;
+	private ICarSensor insideEntrySensor_;
+	private IEntryUI ui;
+
+	private ICarpark carpark;
+	private IAdhocTicket adhocTicket = null;
+	private long entryTime;
+	private String seasonTicketId = null;
+
+	public EntryController(Carpark carpark, IGate entryGate, ICarSensor os, ICarSensor is, IEntryUI ui) {
+
+		this.carpark = carpark;
+		this.entryGate_ = entryGate;
+		this.outsideEntrySensor_ = os;
+		this.insideEntrySensor_ = is;
+		this.ui = ui;
+
+		outsideEntrySensor_.registerResponder(this);
+		insideEntrySensor_.registerResponder(this);
+		ui.registerController(this);
+		carpark.register(this);
+
+		setState(STATE.IDLE);
+
+	}
+
 	@Override
 	public void buttonPushed() {
-		adhocTicket = carpark.issueAdhocTicket();
-		ui.printTicket(adhocTicket.getCarparkId(), adhocTicket.getTicketNo(),
-		        adhocTicket.getEntryDateTime(), adhocTicket.getBarcode());
-		ui.display("Please take ticket");
-	}
+		if (state_ == STATE.WAITING) {
+			if (!carpark.isFull()) {
+				adhocTicket = carpark.issueAdhocTicket();
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarSensorResponder#carEventDetected(java.lang.String,
-	 * boolean)
-	 */
-	@Override
-	public void carEventDetected(String detectorId, boolean detected) {
-		if (detectorId == outsideSensor.getId() && detected) {
-			ui.display("Please press button.");
-		} else if (detectorId == insideSensor.getId() && detected) {
-			entryGate.lower();
-			ui.display("");
-			ui.discardTicket();
+				String carparkId = adhocTicket.getCarparkId();
+				int ticketNo = adhocTicket.getTicketNo();
+				entryTime = System.currentTimeMillis();
+				// entryTime = adhocTicket.getEntryDateTime();
+				String barcode = adhocTicket.getBarcode();
+
+				ui.printTicket(carparkId, ticketNo, entryTime, barcode);
+				setState(STATE.ISSUED);
+			} else {
+				setState(STATE.FULL);
+			}
+		} else {
+			ui.beep();
+			log("ButtonPushed: called while in incorrect state");
 		}
+
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.ICarparkObserver#notifyCarparkEvent()
-	 */
+	@Override
+	public void carEventDetected(String detectorId, boolean carDetected) {
+
+		log("carEventDetected: " + detectorId + ", car Detected: " + carDetected);
+
+		switch (state_) {
+
+		case BLOCKED:
+			if (detectorId.equals(insideEntrySensor_.getId()) && !carDetected) {
+				setState(prevState_);
+			}
+			break;
+
+		case IDLE:
+			log("eventDetected: IDLE");
+			if (detectorId.equals(outsideEntrySensor_.getId()) && carDetected) {
+				log("eventDetected: setting state to WAITING");
+				setState(STATE.WAITING);
+			} else if (detectorId.equals(insideEntrySensor_.getId()) && carDetected) {
+				setState(STATE.BLOCKED);
+			}
+			break;
+
+		case WAITING:
+		case FULL:
+		case VALIDATED:
+		case ISSUED:
+			if (detectorId.equals(outsideEntrySensor_.getId()) && !carDetected) {
+				setState(STATE.IDLE);
+			} else if (detectorId.equals(insideEntrySensor_.getId()) && carDetected) {
+				setState(STATE.BLOCKED);
+			}
+			break;
+
+		case TAKEN:
+			if (detectorId.equals(outsideEntrySensor_.getId()) && !carDetected) {
+				setState(STATE.IDLE);
+			} else if (detectorId.equals(insideEntrySensor_.getId()) && carDetected) {
+				setState(STATE.ENTERING);
+			}
+			break;
+
+		case ENTERING:
+			if (detectorId.equals(outsideEntrySensor_.getId()) && !carDetected) {
+				setState(STATE.ENTERED);
+			} else if (detectorId.equals(insideEntrySensor_.getId()) && !carDetected) {
+				setState(STATE.TAKEN);
+			}
+			break;
+
+		case ENTERED:
+			if (detectorId.equals(outsideEntrySensor_.getId()) && carDetected) {
+				setState(STATE.ENTERING);
+			} else if (detectorId.equals(insideEntrySensor_.getId()) && !carDetected) {
+				setState(STATE.IDLE);
+			}
+			break;
+
+		default:
+			break;
+
+		}
+
+	}
+
+	public STATE getState() {
+		return state_;
+	}
+
+	private void log(String message) {
+		System.out.println("EntryController : " + message);
+	}
+
 	@Override
 	public void notifyCarparkEvent() {
-		carpark.notify();
+		if (state_ == STATE.FULL) {
+			if (!carpark.isFull()) {
+				setState(STATE.WAITING);
+			}
+		}
+
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * bcccp.carpark.entry.IEntryController#ticketInserted(java.lang.String)
-	 */
+	private void setState(STATE newState) {
+		switch (newState) {
+
+		case BLOCKED:
+			log("setState: BLOCKED");
+			prevState_ = state_;
+			state_ = STATE.BLOCKED;
+			message = "Blocked";
+			ui.display(message);
+			break;
+
+		case IDLE:
+			log("setState: IDLE");
+			if (prevState_ == STATE.ENTERED) {
+				if (adhocTicket != null) {
+					adhocTicket.enter(entryTime);
+					carpark.recordAdhocTicketEntry();
+					entryTime = 0;
+					log(adhocTicket.toString());
+					adhocTicket = null;
+				} else if (seasonTicketId != null) {
+					carpark.recordSeasonTicketEntry(seasonTicketId);
+					seasonTicketId = null;
+				}
+			}
+			message = "Idle";
+			state_ = STATE.IDLE;
+			prevState_ = state_;
+			ui.display(message);
+			if (outsideEntrySensor_.carIsDetected()) {
+				setState(STATE.WAITING);
+			}
+			if (entryGate_.isRaised()) {
+				entryGate_.lower();
+			}
+			ui.discardTicket();
+			break;
+
+		case WAITING:
+			log("setState: WAITING");
+			message = "Push Button";
+			state_ = STATE.WAITING;
+			prevState_ = state_;
+			ui.display(message);
+			if (!outsideEntrySensor_.carIsDetected()) {
+				setState(STATE.IDLE);
+			}
+			break;
+
+		case FULL:
+			log("setState: FULL");
+			message = "Carpark Full";
+			state_ = STATE.FULL;
+			prevState_ = state_;
+			ui.display(message);
+			break;
+
+		case VALIDATED:
+			log("setState: VALIDATED");
+			message = "Ticket Validated";
+			state_ = STATE.VALIDATED;
+			prevState_ = state_;
+			ui.display(message);
+			if (!outsideEntrySensor_.carIsDetected()) {
+				setState(STATE.IDLE);
+			}
+			break;
+
+		case ISSUED:
+			log("setState: ISSUED");
+			message = "Take Ticket";
+			state_ = STATE.ISSUED;
+			prevState_ = state_;
+			ui.display(message);
+			if (!outsideEntrySensor_.carIsDetected()) {
+				setState(STATE.IDLE);
+			}
+			break;
+
+		case TAKEN:
+			log("setState: TAKEN");
+			message = "Ticket Taken";
+			state_ = STATE.TAKEN;
+			prevState_ = state_;
+			ui.display(message);
+			entryGate_.raise();
+			break;
+
+		case ENTERING:
+			log("setState: ENTERING");
+			message = "Entering";
+			state_ = STATE.ENTERING;
+			prevState_ = state_;
+			ui.display(message);
+			break;
+
+		case ENTERED:
+			log("setState: ENTERED");
+			message = "Entered";
+			state_ = STATE.ENTERED;
+			prevState_ = state_;
+			ui.display(message);
+			break;
+
+		default:
+			break;
+
+		}
+
+	}
+
 	@Override
 	public void ticketInserted(String barcode) {
-		if (carpark.isSeasonTicketValid(barcode)
-		        && !carpark.isSeasonTicketInUse(barcode)) {
-			seasonTicketId = barcode;
-			ui.display("Ticket Valid.");
+		if (state_ == STATE.WAITING) {
+			try {
+				if (carpark.isSeasonTicketValid(barcode) && !carpark.isSeasonTicketInUse(barcode)) {
+					this.seasonTicketId = barcode;
+					setState(STATE.VALIDATED);
+				} else {
+					ui.beep();
+					seasonTicketId = null;
+					log("ticketInserted: invalid ticket id");
+				}
+			} catch (NumberFormatException e) {
+				ui.beep();
+				seasonTicketId = null;
+				log("ticketInserted: invalid ticket id");
+			}
 		} else {
-			ui.display("Invalid Ticket.");
+			ui.beep();
+			log("ticketInserted: called while in incorrect state");
 		}
+
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see bcccp.carpark.entry.IEntryController#ticketTaken()
-	 */
 	@Override
 	public void ticketTaken() {
-		entryTime = new Date().getTime();
-		if (adhocTicket != null) {
-			adhocTicket.enter(new Date().getTime());
-			adhocTicket.enter(entryTime);
-			carpark.recordAdhocTicketEntry();
-			entryGate.raise();
-			ui.display("Enter");
-		} else if (seasonTicketId != null) {
-			carpark.recordSeasonTicketEntry(seasonTicketId);
-			ui.display("Enter");
+		if (state_ == STATE.ISSUED || state_ == STATE.VALIDATED) {
+			setState(STATE.TAKEN);
+		} else {
+			ui.beep();
+			log("ticketTaken: called while in incorrect state");
 		}
 
-		adhocTicket = null;
-		seasonTicketId = null;
 	}
 
 }
