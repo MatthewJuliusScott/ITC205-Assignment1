@@ -10,21 +10,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import bcccp.carpark.CarSensor;
 import bcccp.carpark.Carpark;
 import bcccp.carpark.Gate;
-import bcccp.carpark.ICarSensor;
-import bcccp.carpark.ICarSensorResponder;
 import bcccp.carpark.IGate;
 import bcccp.tickets.adhoc.AdhocTicket;
 import bcccp.tickets.adhoc.AdhocTicketDAO;
 import bcccp.tickets.adhoc.AdhocTicketFactory;
 import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.season.IUsageRecordFactory;
+import bcccp.tickets.season.SeasonTicket;
 import bcccp.tickets.season.SeasonTicketDAO;
 import bcccp.tickets.season.UsageRecordFactory;
 
@@ -40,12 +37,14 @@ public class ExitControllerIntegrationTest {
 	private IGate			exitGate;
 
 	private CarSensor		is;
-	
+
 	private CarSensor		os;
-	
+
 	private IExitUI			ui;
 
-	AdhocTicket				adhocTicket;
+	IAdhocTicket			adhocTicket;
+
+	SeasonTicket			seasonTicket;
 
 	private ExitController	exitController;
 
@@ -65,16 +64,18 @@ public class ExitControllerIntegrationTest {
 		        usageRecordFactory);
 
 		carpark = new Carpark(name, capacity, adhocTicketDAO, seasonTicketDAO);
-		
+
 		exitGate = new Gate(1330, 320);
 		is = new CarSensor("Exit Inside Sensor", 1330, 100);
 		is.registerResponder(exitController);
 		os = new CarSensor("Exit Outside Sensor", 1330, 440);
 		os.registerResponder(exitController);
 		ui = new ExitUI(1000, 100);
-		
+
 		exitController = new ExitController(carpark, exitGate, is, os, ui);
 
+		seasonTicket = new SeasonTicket("S1111", name, 0L, 0L);
+		
 		int ticketNo = 1;
 		String barcode = "A" + Integer.toHexString(ticketNo);
 		adhocTicket = new AdhocTicket("carparkId", ticketNo, barcode);
@@ -129,8 +130,8 @@ public class ExitControllerIntegrationTest {
 		// tests that when the exit is BLOCKED and no car is detected inside it
 		// returns to its previous State
 		ExitController.STATE expected = exitController.getPrevState();
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
+		exitController.carEventDetected(os.getId(), false);
 		testCarEventDetectedBLOCKED();
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -149,9 +150,7 @@ public class ExitControllerIntegrationTest {
 
 		testTicketInsertedSeasonPROCESSED();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
-
+		is.setCarIsDetected(false);
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -169,7 +168,7 @@ public class ExitControllerIntegrationTest {
 
 		testTicketInsertedSeasonPROCESSED();
 
-		when(os.getId()).thenReturn("Exit Outside Sensor");
+		os.setCarIsDetected(true);
 
 		exitController.carEventDetected("Exit Outside Sensor", true);
 		ExitController.STATE actual = exitController.getState();
@@ -188,8 +187,7 @@ public class ExitControllerIntegrationTest {
 
 		testTicketTakenAdhocTAKEN();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -209,8 +207,7 @@ public class ExitControllerIntegrationTest {
 
 		testTicketTakenAdhocTAKEN();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(true);
+		is.setCarIsDetected(true);
 
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -229,8 +226,7 @@ public class ExitControllerIntegrationTest {
 
 		testTicketTakenSeasonTAKEN();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -250,8 +246,6 @@ public class ExitControllerIntegrationTest {
 
 		testTicketTakenAdhocTAKEN();
 
-		when(os.getId()).thenReturn("Exit Outside Sensor");
-
 		exitController.carEventDetected("Exit Outside Sensor", true);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -269,8 +263,6 @@ public class ExitControllerIntegrationTest {
 		ExitController.STATE expected = ExitController.STATE.EXITING;
 
 		testTicketTakenSeasonTAKEN();
-
-		when(os.getId()).thenReturn("Exit Outside Sensor");
 
 		exitController.carEventDetected("Exit Outside Sensor", true);
 		ExitController.STATE actual = exitController.getState();
@@ -290,8 +282,6 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedAdhocTAKENtoEXITING();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -309,8 +299,6 @@ public class ExitControllerIntegrationTest {
 		ExitController.STATE expected = ExitController.STATE.EXITED;
 
 		testCarEventDetectedSeasonTAKENtoEXITING();
-
-		when(is.getId()).thenReturn("Exit Inside Sensor");
 
 		exitController.carEventDetected("Exit Inside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -330,8 +318,6 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedAdhocTAKENtoEXITING();
 
-		when(os.getId()).thenReturn("Exit Outside Sensor");
-
 		exitController.carEventDetected("Exit Outside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -349,8 +335,6 @@ public class ExitControllerIntegrationTest {
 		ExitController.STATE expected = ExitController.STATE.TAKEN;
 
 		testCarEventDetectedSeasonTAKENtoEXITING();
-
-		when(os.getId()).thenReturn("Exit Outside Sensor");
 
 		exitController.carEventDetected("Exit Outside Sensor", false);
 		ExitController.STATE actual = exitController.getState();
@@ -370,8 +354,6 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedAdhocEXITINGtoEXITED();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-
 		exitController.carEventDetected("Exit Inside Sensor", true);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -390,8 +372,6 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedSeasonEXITINGtoEXITED();
 
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-
 		exitController.carEventDetected("Exit Inside Sensor", true);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -409,9 +389,8 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedAdhocEXITINGtoEXITED();
 
-		when(os.getId()).thenReturn("Exit Outside Sensor");
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
+
+		is.setCarIsDetected(false);
 
 		exitController.carEventDetected("Exit Outside Sensor", false);
 		ExitController.STATE actual = exitController.getPrevState();
@@ -431,9 +410,7 @@ public class ExitControllerIntegrationTest {
 
 		testCarEventDetectedSeasonEXITINGtoEXITED();
 
-		when(os.getId()).thenReturn("Exit Outside Sensor");
-		when(is.getId()).thenReturn("Exit Inside Sensor");
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 
 		exitController.carEventDetected("Exit Outside Sensor", false);
 		ExitController.STATE actual = exitController.getPrevState();
@@ -446,16 +423,15 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testTicketInsertedAdhocPROCESSED() throws Exception {
-		AdhocTicket adhocTicket = new AdhocTicket();
-		when(adhocTicket.isPaid()).thenReturn(true);
-		when(carpark.getAdhocTicket("A")).thenReturn(adhocTicket);
+		adhocTicket = carpark.issueAdhocTicket();
+		adhocTicket.pay(0L, 0.0f);
 
 		// cause state to be WAITING
 		testCarEventDetectedWAITING();
 
 		// insert the ticket, STATE should be PROCESSED
 		ExitController.STATE expected = ExitController.STATE.PROCESSED;
-		exitController.ticketInserted("A");
+		exitController.ticketInserted(adhocTicket.getBarcode());
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
 	}
@@ -466,17 +442,13 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testTicketInsertedAdhocREJECTED() throws Exception {
-		AdhocTicket adhocTicket = new AdhocTicket();
-		when(adhocTicket.isPaid()).thenReturn(false);
-
-		when(carpark.getAdhocTicket("A")).thenReturn(adhocTicket);
-
+		
 		// cause state to be WAITING
 		testCarEventDetectedWAITING();
 
 		// insert the ticket, STATE should be REJECTED
 		ExitController.STATE expected = ExitController.STATE.REJECTED;
-		exitController.ticketInserted("A");
+		exitController.ticketInserted(adhocTicket.getBarcode());
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
 	}
@@ -487,15 +459,15 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testTicketInsertedSeasonPROCESSED() throws Exception {
-		when(carpark.isSeasonTicketValid("1")).thenReturn(true);
-		when(carpark.isSeasonTicketInUse("1")).thenReturn(true);
-
 		// cause state to be WAITING
 		testCarEventDetectedWAITING();
+		
+		carpark.registerSeasonTicket(seasonTicket);
+		carpark.recordSeasonTicketEntry(seasonTicket.getId());
 
 		// insert the ticket, STATE should be PROCESSED
 		ExitController.STATE expected = ExitController.STATE.PROCESSED;
-		exitController.ticketInserted("1");
+		exitController.ticketInserted(seasonTicket.getId());
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
 	}
@@ -506,14 +478,14 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testTicketInsertedSeasonIDLE() throws Exception {
-		when(carpark.isSeasonTicketValid("1")).thenReturn(true);
-		when(carpark.isSeasonTicketInUse("1")).thenReturn(true);
+		carpark.registerSeasonTicket(seasonTicket);
+		carpark.recordSeasonTicketEntry(seasonTicket.getId());
 
 		// cause state to be WAITING
 		testCarEventDetectedWAITING();
 
 		// insert the ticket, STATE should be PROCESSED
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 		ExitController.STATE expected = ExitController.STATE.IDLE;
 		exitController.ticketInserted("1");
 		ExitController.STATE actual = exitController.getState();
@@ -530,7 +502,7 @@ public class ExitControllerIntegrationTest {
 		testCarEventDetectedWAITING();
 
 		// insert the ticket, STATE should be IDLE
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 		ExitController.STATE expected = ExitController.STATE.IDLE;
 		exitController.ticketInserted("1");
 		ExitController.STATE actual = exitController.getState();
@@ -543,15 +515,14 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testTicketInsertedSeasonREJECTED() throws Exception {
-		when(carpark.isSeasonTicketValid("1")).thenReturn(false);
-		when(is.carIsDetected()).thenReturn(false);
+		is.setCarIsDetected(false);
 
 		// cause state to be WAITING
 		testCarEventDetectedWAITING();
 
 		// insert the ticket, STATE should be REJECTED
 		ExitController.STATE expected = ExitController.STATE.REJECTED;
-		exitController.ticketInserted("1");
+		exitController.ticketInserted(seasonTicket.getId());
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
 	}
@@ -616,8 +587,8 @@ public class ExitControllerIntegrationTest {
 	public final void testTicketTakenStateIDLE() throws Exception {
 		// 'take' the ticket, STATE should be IDLE
 		testTicketInsertedAdhocREJECTED();
-		when(is.carIsDetected()).thenReturn(false);
-		when(exitGate.isRaised()).thenReturn(true);
+		is.setCarIsDetected(false);
+		exitGate.raise();
 		exitController.ticketTaken();
 		ExitController.STATE expected = ExitController.STATE.IDLE;
 		exitController.ticketTaken();
@@ -632,7 +603,7 @@ public class ExitControllerIntegrationTest {
 	public final void testTicketTakenStateWAITING() throws Exception {
 		// 'take' the ticket, STATE should be WAITING
 		testTicketInsertedAdhocREJECTED();
-		when(is.carIsDetected()).thenReturn(true);
+		is.setCarIsDetected(true);
 		exitController.ticketTaken();
 		ExitController.STATE expected = ExitController.STATE.WAITING;
 		ExitController.STATE actual = exitController.getState();
