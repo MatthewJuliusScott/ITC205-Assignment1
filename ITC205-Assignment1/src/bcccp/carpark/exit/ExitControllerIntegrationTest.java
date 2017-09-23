@@ -39,9 +39,9 @@ public class ExitControllerIntegrationTest {
 
 	private IGate			exitGate;
 
-	private ICarSensor		is;
+	private CarSensor		is;
 	
-	private ICarSensor		os;
+	private CarSensor		os;
 	
 	private IExitUI			ui;
 
@@ -99,7 +99,7 @@ public class ExitControllerIntegrationTest {
 		// tests that when a car approaches the inside sensor
 		// the state is set to waiting
 		ExitController.STATE expected = ExitController.STATE.WAITING;
-		is.carIsDetected();
+		is.setCarIsDetected(true);
 		exitController.carEventDetected(is.getId(), true);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
@@ -114,8 +114,8 @@ public class ExitControllerIntegrationTest {
 		// tests that when a car is at the outside sensor
 		// the state is set to blocked
 		ExitController.STATE expected = ExitController.STATE.BLOCKED;
-		when(os.getId()).thenReturn("Exit Outside Sensor");
-		exitController.carEventDetected("Exit Outside Sensor", true);
+		os.setCarIsDetected(true);
+		exitController.carEventDetected(os.getId(), true);
 		ExitController.STATE actual = exitController.getState();
 		Assert.assertEquals(expected, actual);
 	}
