@@ -26,6 +26,81 @@ public class AdhocTicket implements IAdhocTicket {
 
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((barcode == null) ? 0 : barcode.hashCode());
+		result = prime * result
+		        + ((carparkId_ == null) ? 0 : carparkId_.hashCode());
+		result = prime * result + Float.floatToIntBits(charge);
+		result = prime * result
+		        + (int) (entryDateTime ^ (entryDateTime >>> 32));
+		result = prime * result + (int) (exitDateTime ^ (exitDateTime >>> 32));
+		result = prime * result + (int) (paidDateTime ^ (paidDateTime >>> 32));
+		result = prime * result + ((state_ == null) ? 0 : state_.hashCode());
+		result = prime * result + ticketNo_;
+		return result;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof AdhocTicket)) {
+			return false;
+		}
+		AdhocTicket other = (AdhocTicket) obj;
+		if (barcode == null) {
+			if (other.barcode != null) {
+				return false;
+			}
+		} else if (!barcode.equals(other.barcode)) {
+			return false;
+		}
+		if (carparkId_ == null) {
+			if (other.carparkId_ != null) {
+				return false;
+			}
+		} else if (!carparkId_.equals(other.carparkId_)) {
+			return false;
+		}
+		if (Float.floatToIntBits(charge) != Float
+		        .floatToIntBits(other.charge)) {
+			return false;
+		}
+		if (entryDateTime != other.entryDateTime) {
+			return false;
+		}
+		if (exitDateTime != other.exitDateTime) {
+			return false;
+		}
+		if (paidDateTime != other.paidDateTime) {
+			return false;
+		}
+		if (state_ != other.state_) {
+			return false;
+		}
+		if (ticketNo_ != other.ticketNo_) {
+			return false;
+		}
+		return true;
+	}
+
+
+
 	@Override
 	public String getBarcode() {
 		return barcode;
