@@ -12,20 +12,17 @@ public class UsageRecord implements IUsageRecord {
 		this.ticketId = ticketId;
 		this.startDateTime = startDateTime;
 	}
-
-
-
-	@Override
+	
+	
+	
 	public void finalise(long endDateTime) {
 		this.endDateTime = endDateTime;
-		
 	}
-
-
-
+	
+	
+	
 	@Override
 	public long getStartTime() {
-	
 		return startDateTime;
 	}
 
@@ -33,7 +30,6 @@ public class UsageRecord implements IUsageRecord {
 
 	@Override
 	public long getEndTime() {
-
 		return endDateTime;
 	}
 
@@ -41,10 +37,16 @@ public class UsageRecord implements IUsageRecord {
 
 	@Override
 	public String getSeasonTicketId() {
-		
 		return ticketId;
 	}
+
 	
 	
-	
+	public String toString() {
+		return ("Usage : startDateTime : " + startDateTime + ", endDateTime: " + endDateTime);
+	}
+
+
+
+
 }

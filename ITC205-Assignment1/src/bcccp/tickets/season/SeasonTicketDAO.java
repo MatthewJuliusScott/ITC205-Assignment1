@@ -1,62 +1,80 @@
-
 package bcccp.tickets.season;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import bcccp.tickets.season.ISeasonTicket;
+import bcccp.tickets.season.IUsageRecordFactory;
 
 public class SeasonTicketDAO implements ISeasonTicketDAO {
 
-	private IUsageRecordFactory				factory;
+	private Map<String, ISeasonTicket> currentTickets;
+	private IUsageRecordFactory factory;
 
-	// need to keep track of all tickets
-	private HashMap<String, ISeasonTicket>	tickets;
-
+	
+	
 	public SeasonTicketDAO(IUsageRecordFactory factory) {
 		this.factory = factory;
-		tickets = new HashMap<String, ISeasonTicket>();
+		currentTickets = new HashMap<>();		
 	}
-
+	
+	
+	
+	@Override
+	public void registerTicket(ISeasonTicket ticket) {
+		if (!currentTickets.containsKey(ticket.getId())) {
+			currentTickets.put(ticket.getId(),ticket);
+		}
+	}
+	
+	
+	
 	@Override
 	public void deregisterTicket(ISeasonTicket ticket) {
-
-		tickets.remove(ticket.getId());
+		if (currentTickets.containsKey(ticket.getId())) {
+			currentTickets.remove(ticket.getId());
+		}
 	}
-
-	@Override
-	public ISeasonTicket findTicketById(String ticketId) {
-
-		return tickets.get(ticketId);
-	}
-
+		
+		
 	@Override
 	public int getNumberOfTickets() {
-
-		return tickets.size();
+		return currentTickets.size();
 	}
+
+	@Override
+	public ISeasonTicket findTicketById(String barcode) {
+		if (currentTickets.containsKey(barcode)) {
+			return currentTickets.get(barcode);
+		}
+		return null;
+	}
+
+
 
 	@Override
 	public void recordTicketEntry(String ticketId) {
-
-		ISeasonTicket newTicket = tickets.get(ticketId);
-
-		long time = System.currentTimeMillis();
-		IUsageRecord usage = factory.make(ticketId, time);
-
-		newTicket.recordUsage(usage);
+		ISeasonTicket ticket = findTicketById(ticketId);
+		if (ticket == null) throw new RuntimeException("recordTicketUsage : no such ticket: " + ticketId);
+		
+		long datetime = System.currentTimeMillis();
+		IUsageRecord usage = factory.make(ticketId, datetime);
+		ticket.recordUsage(usage);		
 	}
+
+
 
 	@Override
 	public void recordTicketExit(String ticketId) {
+		ISeasonTicket ticket = findTicketById(ticketId);
+		if (ticket == null) throw new RuntimeException("finaliseTicketUsage : no such ticket: " + ticketId);
 
-		ISeasonTicket oldTicket = tickets.get(ticketId);
-
-		long time = System.currentTimeMillis();
-		oldTicket.getCurrentUsageRecord().finalise(time);
-
+		long dateTime = System.currentTimeMillis();
+		ticket.endUsage(dateTime);
+		
+		
+		
 	}
-
-	@Override
-	public void registerTicket(ISeasonTicket ticket) {
-		tickets.put(ticket.getId(), ticket);
-	}
-
 }
+
+
