@@ -43,7 +43,7 @@ public class TestSeasonTicketDAO {
 		verify(ticket).recordUsage(usage);
 
 		sut.recordTicketExit("id");
-		verify(usage).finalise(anyLong());
+		verify(ticket).endUsage(anyLong());
 
 		sut.deregisterTicket(ticket);
 		assertEquals(0, sut.getNumberOfTickets());
