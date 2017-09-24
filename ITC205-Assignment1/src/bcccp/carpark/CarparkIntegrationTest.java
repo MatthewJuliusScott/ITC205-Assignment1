@@ -5,37 +5,37 @@
 package bcccp.carpark;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import bcccp.tickets.adhoc.AdhocTicketDAO;
+import bcccp.tickets.adhoc.AdhocTicketFactory;
 import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
 import bcccp.tickets.season.ISeasonTicketDAO;
+import bcccp.tickets.season.IUsageRecordFactory;
+import bcccp.tickets.season.SeasonTicket;
+import bcccp.tickets.season.SeasonTicketDAO;
+import bcccp.tickets.season.UsageRecordFactory;
 
 /**
  * @author Matthew
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class CarparkTest {
+public class CarparkIntegrationTest {
 
 	private int					capacity	= 10;
 
 	private String				name		= "Test Carpark";
 
-	@Mock
 	private IAdhocTicketDAO		adhocTicketDAO;
 
-	@Mock
 	private ISeasonTicketDAO	seasonTicketDAO;
 
 	Carpark						carpark;
@@ -45,7 +45,12 @@ public class CarparkTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		AdhocTicketFactory adhocTicketFactory = new AdhocTicketFactory();
+		adhocTicketDAO = new AdhocTicketDAO(adhocTicketFactory); 
+		
+		IUsageRecordFactory usageRecordFactory = new UsageRecordFactory();
+		seasonTicketDAO = new SeasonTicketDAO(usageRecordFactory);
+		
 		carpark = new Carpark(name, capacity, adhocTicketDAO, seasonTicketDAO);
 	}
 
@@ -65,10 +70,10 @@ public class CarparkTest {
 	 */
 	@Test
 	public final void testGetAdhocTicket() throws Exception {
-		IAdhocTicket expected = org.mockito.Mockito.mock(IAdhocTicket.class);
-		when(adhocTicketDAO.findTicketByBarcode("BARCODE"))
-		        .thenReturn(expected);
-		IAdhocTicket actual = carpark.getAdhocTicket("BARCODE");
+		int ticketNo = 1;
+		String barcode = "A" + Integer.toHexString(ticketNo);
+		IAdhocTicket expected = adhocTicketDAO.createTicket("carparkId");
+		IAdhocTicket actual = carpark.getAdhocTicket(barcode);
 		Assert.assertEquals(expected, actual);
 	}
 
@@ -77,11 +82,10 @@ public class CarparkTest {
 	 * {@link bcccp.carpark.Carpark#isSeasonTicketValid(java.lang.String)}.
 	 */
 	@Test
-	public final void testIsSeasonTicketValid() throws Exception {
-		ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
-		when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
-		boolean isValid = carpark.isSeasonTicketValid("BARCODE");
-		Assert.assertTrue(isValid);
+	public final void testIsSeasonTicketValid() throws Exception { 
+		ISeasonTicket seasonTicket = new SeasonTicket("S1111","Bathurst Chase", 0L, 0L);
+		carpark.registerSeasonTicket(seasonTicket);
+		Assert.assertTrue(carpark.isSeasonTicketValid(seasonTicket.getId()));
 	}
 
 	/**
@@ -102,10 +106,10 @@ public class CarparkTest {
 	@Test
 	public final void testRecordSeasonTicketExit() throws Exception {
 		try {
-			ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
-			when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
-			doNothing().when(seasonTicketDAO).recordTicketExit("BARCODE");
-			carpark.recordSeasonTicketExit("BARCODE");
+			ISeasonTicket seasonTicket = new SeasonTicket("S1111",carpark.getName(), 0L, 0L);
+			carpark.registerSeasonTicket(seasonTicket);
+			carpark.recordSeasonTicketEntry(seasonTicket.getId());
+			carpark.recordSeasonTicketExit(seasonTicket.getId());
 		} catch (Exception e) {
 			fail();
 		}
@@ -118,11 +122,11 @@ public class CarparkTest {
 	@Test
 	public final void testIsSeasonTicketInUse() throws Exception {
 		try {
-			ISeasonTicket ticket = org.mockito.Mockito.mock(ISeasonTicket.class);
-			when(seasonTicketDAO.findTicketById("BARCODE")).thenReturn(ticket);
-			when(ticket.inUse()).thenReturn(true);
+			ISeasonTicket seasonTicket = new SeasonTicket("S1111",carpark.getName(), 0L, 0L);
+			carpark.registerSeasonTicket(seasonTicket);
+			carpark.recordSeasonTicketEntry(seasonTicket.getId());
 			boolean expected = true;
-			boolean actual = carpark.isSeasonTicketInUse("BARCODE");
+			boolean actual = carpark.isSeasonTicketInUse(seasonTicket.getId());
 			Assert.assertEquals(expected, actual);
 		} catch (Exception e) {
 			fail();
