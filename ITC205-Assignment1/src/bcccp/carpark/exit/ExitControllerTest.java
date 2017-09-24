@@ -62,7 +62,7 @@ public class ExitControllerTest {
 	 */
 	@Test
 	public final void testExitController() throws Exception {
-		exitController = new ExitController(carpark, exitGate, is, is, ui);
+		exitController = new ExitController(carpark, exitGate, is, os, ui);
 		Assert.assertNotNull(exitController);
 	}
 

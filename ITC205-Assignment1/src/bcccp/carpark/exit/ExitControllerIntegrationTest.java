@@ -80,6 +80,54 @@ public class ExitControllerIntegrationTest {
 		String barcode = "A" + Integer.toHexString(ticketNo);
 		adhocTicket = new AdhocTicket("carparkId", ticketNo, barcode);
 	}
+	
+	/**
+	 * Test method for
+	 * {@link bcccp.carpark.exit.ExitController
+	 */
+	@Test
+	public final void testSunnyDayScenario() throws Exception {
+		// set up
+		ExitController.STATE expected = exitController.getState();
+		ExitController.STATE actual = exitController.getState();
+		// issue ticket and pay for it
+		adhocTicket = carpark.issueAdhocTicket();
+		adhocTicket.pay(0L, 0.0f);
+		
+		// approach inside sensor
+		expected = ExitController.STATE.WAITING;
+		is.setCarIsDetected(true);
+		exitController.carEventDetected(is.getId(), true);
+		actual = exitController.getState();
+		Assert.assertEquals(expected, actual);
+		
+		// insert ticket
+		expected = ExitController.STATE.PROCESSED;
+		exitController.ticketInserted(adhocTicket.getBarcode());
+		actual = exitController.getState();
+		Assert.assertEquals(expected, actual);
+		
+		// take ticket
+		expected = ExitController.STATE.TAKEN;
+		exitController.ticketTaken();
+		actual = exitController.getState();
+		Assert.assertEquals(expected, actual);
+		
+		// begin exiting
+		expected = ExitController.STATE.EXITING;
+		is.setCarIsDetected(false);
+		os.setCarIsDetected(true);
+		exitController.carEventDetected("Exit Outside Sensor", true);
+		actual = exitController.getState();
+		Assert.assertEquals(expected, actual);
+		
+		// finish exit (no car detected outside)
+		expected = ExitController.STATE.EXITED;
+		os.setCarIsDetected(false);
+		exitController.carEventDetected("Exit Inside Sensor", false);
+		actual = exitController.getState();
+		Assert.assertEquals(expected, actual);
+	}
 
 	/**
 	 * Test method for
@@ -87,7 +135,6 @@ public class ExitControllerIntegrationTest {
 	 */
 	@Test
 	public final void testExitController() throws Exception {
-		exitController = new ExitController(carpark, exitGate, is, is, ui);
 		Assert.assertNotNull(exitController);
 	}
 
@@ -559,7 +606,6 @@ public class ExitControllerIntegrationTest {
 	public final void testTicketTakenAdhocTAKEN() throws Exception {
 		// 'take' the ticket, STATE should be TAKEN
 		testTicketInsertedAdhocPROCESSED();
-		exitController.ticketTaken();
 		ExitController.STATE expected = ExitController.STATE.TAKEN;
 		exitController.ticketTaken();
 		ExitController.STATE actual = exitController.getState();
